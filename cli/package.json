@@ -1,6 +1,6 @@
 {
   "name": "aeo-linter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Command-line interface for Answer Engine Optimization (AEO/GEO) Linter",
   "bin": {
     "aeo-linter": "./bin/aeo-linter.js"
@@ -31,7 +31,7 @@
   "author": "DrowLink",
   "license": "MIT",
   "dependencies": {
-    "@drowlink/aeo-linter-core": "^0.1.1",
+    "@drowlink/aeo-linter-core": "^0.1.2",
     "commander": "^12.0.0"
   },
   "devDependencies": {

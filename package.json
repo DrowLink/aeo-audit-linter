@@ -12,6 +12,8 @@
     "build": "tsc --build",
     "test": "npm run test --workspaces --if-present",
     "typecheck": "tsc --build --verbose",
+    "publish:core": "npm publish ./core --access public",
+    "publish:cli": "npm publish ./cli --access public",
     "clean": "npm run clean --workspaces --if-present"
   },
   "devDependencies": {

@@ -7,7 +7,7 @@ export class BrowserAeoEngine {
   /**
    * Runs the full AEO audit lifecycle on a given DOM and URL
    */
-  public static async runAudit(url: string, html: string): Promise<any> {
+  static async runAudit(url, html) {
     const urlObj = new URL(url);
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
@@ -52,12 +52,12 @@ export class BrowserAeoEngine {
 
   // --- Gatherers ---
 
-  private static async gatherRobotsTxt(urlObj: URL) {
+  static async gatherRobotsTxt(urlObj) {
     const robotsUrl = `${urlObj.origin}/robots.txt`;
     let rawContent = null;
     let exists = false;
-    let sitemaps: string[] = [];
-    const rulesByAgent: Record<string, any> = {};
+    let sitemaps = [];
+    const rulesByAgent = {};
 
     try {
       const res = await fetch(robotsUrl);
@@ -72,7 +72,7 @@ export class BrowserAeoEngine {
 
     if (rawContent) {
       const lines = rawContent.split(/\r?\n/);
-      let currentAgents: string[] = [];
+      let currentAgents = [];
       for (const rawLine of lines) {
         const line = rawLine.split('#')[0].trim();
         if (!line) continue;
@@ -95,15 +95,15 @@ export class BrowserAeoEngine {
       }
     }
 
-    const checkBot = (botName: string) => {
+    const checkBot = (botName) => {
       const botRule = rulesByAgent[botName.toLowerCase()];
       const wildRule = rulesByAgent['*'];
       const rule = botRule || wildRule;
       if (!rule) return 'not_specified';
-      const isDisallowAll = rule.disallow.some((p: string) => p === '/' || p === '/*');
-      const isAllowAll = rule.allow.some((p: string) => p === '/' || p === '/*');
+      const isDisallowAll = rule.disallow.some((p) => p === '/' || p === '/*');
+      const isAllowAll = rule.allow.some((p) => p === '/' || p === '/*');
       if (isDisallowAll && !isAllowAll) return 'disallowed';
-      if (rule.disallow.some((p: string) => urlObj.pathname.startsWith(p))) return 'disallowed';
+      if (rule.disallow.some((p) => urlObj.pathname.startsWith(p))) return 'disallowed';
       return 'allowed';
     };
 
@@ -124,8 +124,8 @@ export class BrowserAeoEngine {
     };
   }
 
-  private static async gatherHttpHeaders(url: string) {
-    let xRobotsTag: string | null = null;
+  static async gatherHttpHeaders(url) {
+    let xRobotsTag = null;
     try {
       const res = await fetch(url, { method: 'HEAD' });
       xRobotsTag = res.headers.get('x-robots-tag');
@@ -140,24 +140,24 @@ export class BrowserAeoEngine {
     };
   }
 
-  private static gatherJsonLd(doc: Document) {
+  static gatherJsonLd(doc) {
     const scripts = Array.from(doc.querySelectorAll('script[type="application/ld+json"]'));
-    const items: any[] = [];
-    const schemasCountByType: Record<string, number> = {};
+    const items = [];
+    const schemasCountByType = {};
     let hasFAQPage = false;
     let hasHowTo = false;
     let hasArticle = false;
     let hasQAPage = false;
     let hasOrganization = false;
     let hasProduct = false;
-    const sameAsUrls: string[] = [];
+    const sameAsUrls = [];
 
     scripts.forEach((script) => {
       const raw = script.textContent || '';
       try {
         const parsed = JSON.parse(raw);
         const types = Array.isArray(parsed['@type']) ? parsed['@type'] : [parsed['@type'] || ''];
-        types.forEach((t: string) => {
+        types.forEach((t) => {
           if (t) schemasCountByType[t] = (schemasCountByType[t] || 0) + 1;
           if (t.includes('FAQPage')) hasFAQPage = true;
           if (t.includes('HowTo')) hasHowTo = true;
@@ -173,7 +173,7 @@ export class BrowserAeoEngine {
         }
 
         items.push({ raw, parsed, type: parsed['@type'] || 'Unknown', isValid: true });
-      } catch (err: any) {
+      } catch (err) {
         items.push({ raw, parsed: null, type: 'Invalid', isValid: false, syntaxErrors: [err.message] });
       }
     });
@@ -192,7 +192,7 @@ export class BrowserAeoEngine {
     };
   }
 
-  private static gatherMetaTags(doc: Document) {
+  static gatherMetaTags(doc) {
     const title = doc.querySelector('title')?.textContent?.trim() || null;
     const desc = doc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() || null;
     const canonical = doc.querySelector('link[rel="canonical"]')?.getAttribute('href')?.trim() || null;
@@ -210,8 +210,8 @@ export class BrowserAeoEngine {
     };
   }
 
-  private static gatherHeadings(doc: Document) {
-    const headings: any[] = [];
+  static gatherHeadings(doc) {
+    const headings = [];
     let h1Count = 0;
     let h2Count = 0;
     let h3Count = 0;
@@ -226,7 +226,7 @@ export class BrowserAeoEngine {
       headings.push({ level, text, index });
     });
 
-    const skippedLevels: any[] = [];
+    const skippedLevels = [];
     let isHierarchySequential = true;
     for (let i = 1; i < headings.length; i++) {
       const prev = headings[i - 1];
@@ -248,20 +248,20 @@ export class BrowserAeoEngine {
     };
   }
 
-  private static gatherContentChunks(doc: Document) {
-    const clone = doc.cloneNode(true) as Document;
+  static gatherContentChunks(doc) {
+    const clone = doc.cloneNode(true);
     clone.querySelectorAll('script, style, noscript, svg, nav, footer, header').forEach((el) => el.remove());
 
     const hasMain = clone.querySelector('main') !== null;
     const hasArticle = clone.querySelector('article') !== null;
     const hasSections = clone.querySelector('section') !== null;
 
-    const semanticTagsUsed: string[] = [];
+    const semanticTagsUsed = [];
     if (hasMain) semanticTagsUsed.push('main');
     if (hasArticle) semanticTagsUsed.push('article');
     if (hasSections) semanticTagsUsed.push('section');
 
-    const chunks: any[] = [];
+    const chunks = [];
     const containers = clone.querySelectorAll('article, section, main, body');
     let chunkId = 0;
 
@@ -295,8 +295,8 @@ export class BrowserAeoEngine {
     };
   }
 
-  private static gatherDirectAnswers(doc: Document) {
-    const pairs: any[] = [];
+  static gatherDirectAnswers(doc) {
+    const pairs = [];
     const questionWordsRegex = /^(what|how|why|when|where|who|which|is|are|can|do|does|should|will|¿|\?)\b/i;
     const definitionRegex = /\b(is a|is an|is the|are the|refers to|is defined as|means|consists of)\b/i;
 
@@ -338,8 +338,8 @@ export class BrowserAeoEngine {
 
   // --- 12 Pure Audits ---
 
-  private static runAudits(artifacts: any) {
-    const results: Record<string, any> = {};
+  static runAudits(artifacts) {
+    const results = {};
 
     // 1. ai-robots-txt
     const bots = artifacts.RobotsTxt.aiBotsStatus;
@@ -377,7 +377,7 @@ export class BrowserAeoEngine {
 
     // 4. jsonld-syntax-validity
     const jsonld = artifacts.JSONLD;
-    const invalidJ = jsonld.items.filter((i: any) => !i.isValid);
+    const invalidJ = jsonld.items.filter((i) => !i.isValid);
     const validJCount = jsonld.items.length - invalidJ.length;
     results['jsonld-syntax-validity'] = {
       id: 'jsonld-syntax-validity',
@@ -432,7 +432,7 @@ export class BrowserAeoEngine {
     };
 
     // 9. chunk-token-density
-    const tokenChunks = chunks.chunks.filter((c: any) => c.estimatedTokens >= 100 && c.estimatedTokens <= 600);
+    const tokenChunks = chunks.chunks.filter((c) => c.estimatedTokens >= 100 && c.estimatedTokens <= 600);
     const chunkRatio = chunks.chunks.length > 0 ? tokenChunks.length / chunks.chunks.length : 0.5;
     results['chunk-token-density'] = {
       id: 'chunk-token-density',
@@ -478,7 +478,7 @@ export class BrowserAeoEngine {
 
   // --- Aggregator ---
 
-  private static aggregateReport(url: string, audits: Record<string, any>) {
+  static aggregateReport(url, audits) {
     const categoriesConfig = {
       'ai-accessibility': {
         id: 'ai-accessibility',
@@ -526,7 +526,7 @@ export class BrowserAeoEngine {
       },
     };
 
-    const categories: Record<string, any> = {};
+    const categories = {};
     let totalScore = 0;
     let totalWeight = 0;
 

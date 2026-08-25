@@ -10,7 +10,7 @@
 
 **Open-source audit and linting engine for Answer Engine Optimization (AEO/GEO) and RAG readiness.**
 
-[Quickstart](#-quickstart) • [Architecture](#-architecture) • [Audits Catalog](#-audits-catalog) • [CLI Usage](#-cli-usage) • [Programmatic API](#-programmatic-api) • [Contributing](#-contributing)
+[Installation](#-installation) • [CLI Usage](#-cli-usage) • [HTML Reports](#-visual-html-report) • [CI/CD Workflow](#-cicd-github-actions-integration) • [Programmatic API](#-programmatic-api-node--typescript) • [Chrome DevTools](#-chrome-devtools-extension) • [Audits Catalog](#-audits-catalog)
 
 </div>
 
@@ -18,68 +18,183 @@
 
 ## 📖 Overview
 
-**AEO Linter** evaluates web pages for visibility in **AI Answer Engines** (such as *SearchGPT, Perplexity AI, Google AI Overviews, Claude, and Gemini*) and vector ingestion pipelines for **RAG (Retrieval-Augmented Generation)**.
+**AEO Linter** analyzes web pages to determine how effectively they can be discovered, indexed, and cited by **AI Answer Engines** (*SearchGPT, Perplexity AI, Google AI Overviews, Claude, and Gemini*) and vector ingestion pipelines for **RAG (Retrieval-Augmented Generation)**.
 
-Built strictly according to the modular architecture of [GoogleChrome/lighthouse](https://github.com/GoogleChrome/lighthouse), decoupling the collection phase (**Gatherers**) from pure audit evaluations (**Audits**), aggregated into weighted score categories (**0 to 100**).
+Built strictly according to the modular architecture of [GoogleChrome/lighthouse](https://github.com/GoogleChrome/lighthouse), decoupling the collection phase (**Gatherers**) from pure deterministic audit evaluations (**Audits**), producing weighted category scores from **0 to 100**.
 
 ---
 
-## 🏛️ Architecture
+## 📦 Installation
 
+### 1. Run without installing (Recommended)
+You can run `aeo-linter` directly using `npx`:
+```bash
+npx aeo-linter https://example.com
 ```
-[ Target URL / DOM ] 
-         │
-         ▼
- 1. GATHER PHASE (core/src/gather)
-    Drivers & Gatherers extract typed raw immutable artifacts (JSON-LD, robots.txt, headers, chunks, headings)
-         │
-         ▼
-   [ Typed Artifacts ]
-         │
-         ▼
- 2. AUDIT PHASE (core/src/audits)
-    Pure deterministic functions evaluate Artifacts and return { score, displayValue, details }
-         │
-         ▼
-   [ Audit Results ]
-         │
-         ▼
- 3. AGGREGATE PHASE (core/src/runner & config)
-    Aggregates audits into categories with weights and computes the Overall AEO Score (0 - 100)
-         │
-         ▼
- [ Terminal / Interactive HTML / JSON Reporters ]
+
+### 2. Install globally
+```bash
+npm install -g aeo-linter
+```
+
+### 3. Install as a project dependency
+```bash
+# Core engine for programmatic usage
+npm install @aeo-linter/core
+
+# Or CLI tool locally in your project
+npm install -D aeo-linter
 ```
 
 ---
 
-## 📁 Repository Structure (Lighthouse Pattern)
+## 🚀 CLI Usage
 
+### 1. Basic Terminal Audit
+Scan any public URL and view a colorful summary in your terminal:
+```bash
+aeo-linter https://example.com
 ```
-aeo-linter/
-├── core/                   # Agnostic core engine (@aeo-linter/core)
-│   ├── src/
-│   │   ├── types/          # TypeScript contracts (Artifacts, AuditResult, Config)
-│   │   ├── gather/         # Raw data gatherers (RobotsTxt, JSONLD, Chunks, etc.)
-│   │   ├── audits/         # Pure audit implementations across 4 categories
-│   │   ├── config/         # default-config.ts with category weights
-│   │   ├── runner/         # 3-phase pipeline runner and score aggregator
-│   │   └── report/         # Interactive HTML & Terminal reporters
-│   └── package.json
-├── cli/                    # Command Line Interface (aeo-linter)
-│   ├── bin/                # Executable binary entrypoint
-│   ├── src/                # Commander.js CLI runner
-│   └── package.json
-├── extension/              # Chrome DevTools Panel Extension (Manifest V3)
-│   ├── manifest.json
-│   ├── devtools.html / js
-│   └── panel.html / js
-├── docs/                   # Architecture & developer guides
-├── .gitignore
-├── LICENSE                 # MIT License
-├── CONTRIBUTING.md         # Open-source contribution guidelines
-└── README.md
+
+### 2. Generate Interactive HTML Report (Lighthouse Dashboard)
+Generate a self-contained, standalone HTML report with score gauges and audit breakdowns:
+```bash
+# Automatically creates an HTML report file
+aeo-linter https://example.com --html
+
+# Or specify a custom output path
+aeo-linter https://example.com --html -o ./reports/aeo-report.html
 ```
+
+### 3. Output JSON for Automation & Scripts
+```bash
+# Print raw JSON to stdout
+aeo-linter https://example.com --json
+
+# Save JSON report to a file
+aeo-linter https://example.com --json -o ./reports/audit-result.json
+```
+
+### 4. Audit Specific Categories
+Select one or more categories separated by commas:
+```bash
+# Only evaluate AI crawler access and direct answer density
+aeo-linter https://example.com -c ai-accessibility,direct-answer-density
+```
+
+### 🎛️ CLI Options Reference
+
+| Option | Shorthand | Description |
+|---|---|---|
+| `<url>` | — | The target URL to audit (required). |
+| `--html` | — | Generates an interactive visual HTML dashboard report. |
+| `--json` | `-j` | Outputs the complete report in JSON format. |
+| `--output <file>` | `-o` | Specifies output path for the report (`.html` or `.json`). |
+| `--categories <list>`| `-c` | Comma-separated list of categories to audit. |
+| `--version` | `-V` | Displays the current version. |
+| `--help` | `-h` | Displays help message and option details. |
+
+---
+
+## 📊 Visual HTML Report
+
+When using `--html`, `aeo-linter` generates a dashboard inspired by Google Lighthouse:
+- **Circular SVG Score Gauges:** Overall AEO Score and individual category scores.
+- **Color-Coded Status Badges:** 🟢 Pass (90–100), 🟡 Average (50–89), 🔴 Fail (0–49).
+- **Interactive Expandable Audits:** Click on any audit card to view explanations, diagnostics, and itemized data tables.
+- **Completely Self-Contained:** Zero external JavaScript dependencies, easily shareable or hostable on GitHub Pages / S3.
+
+---
+
+## 🤖 CI/CD (GitHub Actions Integration)
+
+Add automated AEO auditing to your pull requests and deployments.
+
+Create `.github/workflows/aeo-audit.yml`:
+```yaml
+name: AEO / GEO Audit Linter
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 12 * * 1' # Runs weekly on Mondays
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run AEO Audit
+        run: |
+          npx aeo-linter https://your-production-domain.com --html -o aeo-report.html --json -o aeo-report.json
+
+      - name: Upload HTML Audit Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aeo-audit-report
+          path: aeo-report.html
+```
+
+---
+
+## 💻 Programmatic API (Node.js & TypeScript)
+
+You can embed `@aeo-linter/core` into your backend, SaaS, crawler, or custom CLI.
+
+```typescript
+import { 
+  Runner, 
+  HtmlReporter, 
+  TerminalReporter, 
+  defaultConfig 
+} from '@aeo-linter/core';
+
+async function runAeoAudit() {
+  // 1. Run the full 3-phase audit pipeline
+  const report = await Runner.run('https://example.com', {
+    config: defaultConfig, // Optional custom category weights
+    onProgress: (phase, message) => {
+      console.log(`[${phase.toUpperCase()}] ${message}`);
+    }
+  });
+
+  // 2. Access aggregated scores
+  console.log(`Overall AEO Score: ${report.overallScore} / 100`);
+  console.log(`AI Accessibility: ${report.categories['ai-accessibility'].score}`);
+  console.log(`Structured Data: ${report.categories['structured-data'].score}`);
+
+  // 3. Format reports
+  const terminalReport = TerminalReporter.generate(report);
+  console.log(terminalReport);
+
+  const htmlDashboard = HtmlReporter.generate(report);
+  // fs.writeFileSync('report.html', htmlDashboard);
+}
+
+runAeoAudit();
+```
+
+---
+
+## 🔌 Chrome DevTools Extension
+
+Audit any page directly from the Chrome browser inspection panel without leaving your development workflow:
+
+1. Clone or download this repository.
+2. Open Google Chrome and navigate to `chrome://extensions`.
+3. Enable **"Developer mode"** in the top-right corner.
+4. Click **"Load unpacked"** and select the [`extension/`](extension/) directory.
+5. Open Chrome DevTools (`F12` or `Cmd+Option+I`), navigate to the **"AEO Audit"** tab, and click **"Analizar Página AEO"**.
 
 ---
 
@@ -115,49 +230,38 @@ aeo-linter/
 
 ---
 
-## ⚡ Quickstart
+## 🏛️ Internal Architecture (Lighthouse Pattern)
 
-### Run via npx / CLI
-```bash
-# Run a quick audit in terminal
-npx aeo-linter https://example.com
-
-# Generate a visual interactive HTML dashboard (Lighthouse style)
-npx aeo-linter https://example.com --html -o aeo-report.html
-
-# Output JSON report for CI/CD pipelines
-npx aeo-linter https://example.com --json -o report.json
-
-# Run specific categories only
-npx aeo-linter https://example.com -c ai-accessibility,direct-answer-density
 ```
+[ Target URL / DOM ] 
+         │
+         ▼
+ 1. GATHER PHASE (core/src/gather)
+    Drivers & Gatherers extract typed raw immutable artifacts (JSON-LD, robots.txt, headers, chunks, headings)
+         │
+         ▼
+   [ Typed Artifacts ]
+         │
+         ▼
+ 2. AUDIT PHASE (core/src/audits)
+    Pure deterministic functions evaluate Artifacts and return { score, displayValue, details }
+         │
+         ▼
+   [ Audit Results ]
+         │
+         ▼
+ 3. AGGREGATE PHASE (core/src/runner & config)
+    Aggregates audits into categories with weights and computes the Overall AEO Score (0 - 100)
+         │
+         ▼
+ [ Terminal / Interactive HTML / JSON Reporters ]
+```
+
+See [docs/architecture.md](docs/architecture.md) for full architectural documentation.
 
 ---
 
-## 💻 Programmatic API (`@aeo-linter/core`)
-
-```typescript
-import { Runner, HtmlReporter, TerminalReporter, defaultConfig } from '@aeo-linter/core';
-
-// Run full 3-phase audit pipeline
-const report = await Runner.run('https://example.com', {
-  onProgress: (phase, msg) => {
-    console.log(`[${phase.toUpperCase()}] ${msg}`);
-  }
-});
-
-console.log(`Overall AEO Score: ${report.overallScore} / 100`);
-
-// Generate HTML report string
-const htmlDashboard = HtmlReporter.generate(report);
-
-// Generate formatted Terminal report string with ANSI colors
-const terminalSummary = TerminalReporter.generate(report);
-```
-
----
-
-## 🛠️ Development & Testing
+## 🛠️ Contributing & Local Development
 
 ```bash
 # Clone the repository
@@ -167,21 +271,17 @@ cd aeo-audit-linter
 # Install workspace dependencies
 npm install
 
-# Build all packages
+# Build all TypeScript packages
 npm run build
 
 # Run unit and integration tests with Vitest
 npm test
 ```
 
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/architecture.md](docs/architecture.md) for details on our code of conduct and how to submit pull requests.
+Please review [CONTRIBUTING.md](CONTRIBUTING.md) before submitting Pull Requests.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.

@@ -40,7 +40,7 @@ npm install -g aeo-linter
 ### 3. Install as a project dependency
 ```bash
 # Core engine for programmatic usage
-npm install @aeo-linter/core
+npm install @drowlink/aeo-linter-core
 
 # Or CLI tool locally in your project
 npm install -D aeo-linter
@@ -157,7 +157,7 @@ import {
   HtmlReporter, 
   TerminalReporter, 
   defaultConfig 
-} from '@aeo-linter/core';
+} from '@drowlink/aeo-linter-core';
 
 async function runAeoAudit() {
   // 1. Run the full 3-phase audit pipeline

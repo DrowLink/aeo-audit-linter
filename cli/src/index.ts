@@ -5,8 +5,8 @@
 import { Command } from 'commander';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { Runner, TerminalReporter, HtmlReporter, defaultConfig } from '@aeo-linter/core';
-import type { LinterConfig } from '@aeo-linter/core';
+import { Runner, TerminalReporter, HtmlReporter, defaultConfig } from '@drowlink/aeo-linter-core';
+import type { LinterConfig } from '@drowlink/aeo-linter-core';
 
 export async function runCli(): Promise<void> {
   const program = new Command();

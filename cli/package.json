@@ -30,7 +30,7 @@
   "author": "DrowLink",
   "license": "MIT",
   "dependencies": {
-    "@aeo-linter/core": "^0.1.0",
+    "@drowlink/aeo-linter-core": "^0.1.0",
     "commander": "^12.0.0"
   },
   "devDependencies": {

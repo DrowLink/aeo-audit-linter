@@ -1,44 +1,44 @@
 /**
- * @fileoverview Tipos para la configuración, categorías y cálculo ponderado de scores.
+ * @fileoverview Configuration, category, and weighted score types.
  */
 
 import type { AuditMeta } from './audit.js';
 
 /**
- * Referencia a una auditoría dentro de una categoría, con su peso específico
+ * Reference to an audit inside a category with its specific weight
  */
 export interface AuditRef {
-  /** Identificador de la auditoría */
+  /** Audit unique ID */
   id: string;
-  /** Peso relativo de la auditoría en la categoría (e.g. 1 a 10) */
+  /** Relative weight of the audit in category */
   weight: number;
-  /** Grupo visual opcional para organizar en la UI / reporte */
+  /** Optional visual group */
   group?: string;
 }
 
 /**
- * Categoría que agrupa auditorías temáticas
+ * Category grouping thematic audits
  */
 export interface CategoryConfig {
-  /** Título de la categoría */
+  /** Category title */
   title: string;
-  /** Descripción del propósito y su relevancia en AEO */
+  /** Category description */
   description: string;
-  /** Lista de auditorías ponderadas que pertenecen a esta categoría */
+  /** Weighted audits belonging to this category */
   auditRefs: AuditRef[];
-  /** Peso global de la categoría respecto al score total (opcional) */
+  /** Global weight of the category */
   weight?: number;
 }
 
 /**
- * Configuración completa del linter
+ * Complete linter configuration
  */
 export interface LinterConfig {
-  /** Categorías configuradas */
+  /** Categories mapping */
   categories: Record<string, CategoryConfig>;
-  /** Auditorías registradas en esta configuración (IDs o Metas) */
+  /** Registered audit IDs or Metas */
   audits?: Array<string | AuditMeta>;
-  /** Configuración global y banderas */
+  /** Global settings */
   settings?: {
     locale?: string;
     maxWaitForFulfill?: number;
@@ -48,30 +48,30 @@ export interface LinterConfig {
 }
 
 /**
- * Resultado evaluado de una categoría con su puntaje ponderado
+ * Evaluated category result with weighted score
  */
 export interface CategoryResult {
   id: string;
   title: string;
   description: string;
-  /** Score ponderado de la categoría (0 - 1) */
+  /** Category weighted score (0 - 1) */
   score: number | null;
-  /** Auditorías ejecutadas asociadas a esta categoría con sus resultados */
+  /** Audits evaluated in this category */
   auditRefs: Array<AuditRef & { result: import('./audit.js').AuditResult }>;
 }
 
 /**
- * Resultado completo del análisis AEO
+ * Complete AEO audit report result
  */
 export interface AeoReportResult {
   url: string;
   fetchTime: string;
   aeoVersion: string;
   userAgent: string;
-  /** Puntuación general agregada (0 - 100) */
+  /** Aggregated overall score (0 - 100) */
   overallScore: number;
-  /** Resultados por categoría */
+  /** Category results map */
   categories: Record<string, CategoryResult>;
-  /** Mapa directo de auditorías por id */
+  /** Direct audit results map */
   audits: Record<string, import('./audit.js').AuditResult>;
 }

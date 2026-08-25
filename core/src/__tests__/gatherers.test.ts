@@ -7,7 +7,7 @@ import { ContentChunksGatherer } from '../gather/gatherers/content-chunks-gather
 import { DirectAnswersGatherer } from '../gather/gatherers/direct-answers-gatherer.js';
 
 describe('Gatherers Pipeline', () => {
-  it('RobotsTxtGatherer parsea directivas de AI bots correctamente', async () => {
+  it('RobotsTxtGatherer parses AI bot directives correctly', async () => {
     const mockRobotsContent = `
 User-agent: GPTBot
 Disallow: /private/
@@ -27,7 +27,6 @@ Sitemap: https://example.com/sitemap.xml
       html: '<html><body>Hello</body></html>',
     });
 
-    // Mock fetch for robots.txt
     mockDriver.fetch = async () =>
       new Response(mockRobotsContent, {
         status: 200,
@@ -46,7 +45,7 @@ Sitemap: https://example.com/sitemap.xml
     expect(artifact.aiBotsStatus.perplexityBot).toBe('disallowed');
   });
 
-  it('JSONLDGatherer extrae tipos de esquemas y sameAs', async () => {
+  it('JSONLDGatherer extracts schema types and sameAs links', async () => {
     const html = `
       <!DOCTYPE html>
       <html>
@@ -57,10 +56,10 @@ Sitemap: https://example.com/sitemap.xml
           "@type": "FAQPage",
           "mainEntity": [{
             "@type": "Question",
-            "name": "¿Qué es AEO?",
+            "name": "What is AEO?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "AEO es la optimización para motores de respuesta."
+              "text": "AEO is Answer Engine Optimization."
             }
           }]
         }
@@ -99,13 +98,13 @@ Sitemap: https://example.com/sitemap.xml
     expect(artifact.sameAsUrls).toContain('https://www.wikidata.org/wiki/Q12345');
   });
 
-  it('HeadingsHierarchyGatherer detecta jerarquías y saltos de nivel', async () => {
+  it('HeadingsHierarchyGatherer detects hierarchies and skipped levels', async () => {
     const html = `
       <html>
       <body>
-        <h1>Título Principal</h1>
-        <h3>Salto brusco H3 sin H2</h3>
-        <h2>Ahora un H2</h2>
+        <h1>Main Heading</h1>
+        <h3>Abrupt H3 jump without H2</h3>
+        <h2>Now an H2</h2>
       </body>
       </html>
     `;
@@ -129,12 +128,12 @@ Sitemap: https://example.com/sitemap.xml
     expect(artifact.skippedLevels[0]?.to).toBe(3);
   });
 
-  it('DirectAnswersGatherer detecta preguntas y respuestas directas concisas', async () => {
+  it('DirectAnswersGatherer detects questions and concise direct answers', async () => {
     const html = `
       <html>
       <body>
-        <h2>¿Qué es Answer Engine Optimization?</h2>
-        <p>Answer Engine Optimization es un conjunto de técnicas de arquitectura web y datos estructurados orientadas a maximizar la visibilidad en motores de IA generativa y sistemas RAG.</p>
+        <h2>What is Answer Engine Optimization?</h2>
+        <p>Answer Engine Optimization is a framework of web architecture, semantic chunking, and structured data practices designed to maximize visibility in generative AI engines and RAG retrieval pipelines.</p>
       </body>
       </html>
     `;

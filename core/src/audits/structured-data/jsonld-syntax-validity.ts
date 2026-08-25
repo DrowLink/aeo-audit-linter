@@ -1,5 +1,5 @@
 /**
- * @fileoverview Auditoría para validar la sintaxis e integridad de esquemas JSON-LD
+ * @fileoverview Audit validating the syntax and integrity of JSON-LD schema blocks
  */
 
 import { Audit } from '../audit.js';
@@ -8,10 +8,10 @@ import type { Artifacts, AuditMeta, AuditResult } from '../../types/index.js';
 export class JsonLdSyntaxValidityAudit extends Audit {
   public static override meta: AuditMeta = {
     id: 'jsonld-syntax-validity',
-    title: 'Todos los bloques JSON-LD tienen sintaxis válida y sin errores',
-    failureTitle: 'Se detectaron errores de sintaxis en bloques JSON-LD',
+    title: 'All JSON-LD blocks have valid, error-free syntax',
+    failureTitle: 'Syntax errors detected in JSON-LD structured data blocks',
     description:
-      'Un JSON malformado impide que los parsers de Answer Engines y RAG extraigan la información estructurada de la entidad.',
+      'Malformed JSON prevents Answer Engine parsers and RAG pipelines from extracting structured entity information.',
     requiredArtifacts: ['JSONLD'],
   };
 
@@ -21,8 +21,8 @@ export class JsonLdSyntaxValidityAudit extends Audit {
     if (jsonld.items.length === 0) {
       return this.generateAuditResult({
         score: 0.5,
-        displayValue: 'No se encontraron bloques JSON-LD en la página',
-        explanation: 'Se recomienda agregar esquemas Schema.org mediante <script type="application/ld+json">.',
+        displayValue: 'No JSON-LD structured data blocks found on page',
+        explanation: 'Adding Schema.org structured data via <script type="application/ld+json"> is recommended.',
       });
     }
 
@@ -32,20 +32,20 @@ export class JsonLdSyntaxValidityAudit extends Audit {
 
     const tableItems = jsonld.items.map((item, idx) => ({
       index: idx + 1,
-      type: item.type ? (Array.isArray(item.type) ? item.type.join(', ') : item.type) : 'Desconocido',
-      status: item.isValid ? 'Válido' : 'Error de Sintaxis',
-      error: item.syntaxErrors ? item.syntaxErrors.join('; ') : 'Ninguno',
+      type: item.type ? (Array.isArray(item.type) ? item.type.join(', ') : item.type) : 'Unknown',
+      status: item.isValid ? 'Valid' : 'Syntax Error',
+      error: item.syntaxErrors ? item.syntaxErrors.join('; ') : 'None',
     }));
 
     return this.generateAuditResult({
       score,
-      displayValue: `${validCount} de ${jsonld.items.length} bloques JSON-LD válidos`,
+      displayValue: `${validCount} of ${jsonld.items.length} JSON-LD blocks are valid`,
       details: this.makeTableDetails(
         [
           { key: 'index', label: '#', valueType: 'numeric' },
           { key: 'type', label: '@type', valueType: 'code' },
-          { key: 'status', label: 'Estado', valueType: 'status' },
-          { key: 'error', label: 'Detalle', valueType: 'text' },
+          { key: 'status', label: 'Status', valueType: 'status' },
+          { key: 'error', label: 'Detail', valueType: 'text' },
         ],
         tableItems
       ),

@@ -5,23 +5,23 @@ import { HtmlReporter } from '../report/html-reporter.js';
 import { TerminalReporter } from '../report/terminal-reporter.js';
 
 describe('Runner and Aggregator Full Pipeline', () => {
-  it('ejecuta el ciclo de vida completo de 3 fases y genera reportes', async () => {
+  it('executes the full 3-phase lifecycle and generates reports', async () => {
     const mockHtml = `
       <!DOCTYPE html>
-      <html lang="es">
+      <html lang="en">
       <head>
         <title>AEO Testing Page</title>
-        <meta name="description" content="Página de prueba para linter AEO">
+        <meta name="description" content="AEO test page for linter verification">
         <script type="application/ld+json">
         {
           "@context": "https://schema.org",
           "@type": "FAQPage",
           "mainEntity": [{
             "@type": "Question",
-            "name": "¿Qué es GEO?",
+            "name": "What is GEO?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "GEO es Generative Engine Optimization."
+              "text": "GEO is Generative Engine Optimization."
             }
           }]
         }
@@ -38,12 +38,12 @@ describe('Runner and Aggregator Full Pipeline', () => {
       <body>
         <main>
           <article>
-            <h1>Guía Completa de AEO</h1>
-            <h2>¿Qué es la densidad de respuestas directas?</h2>
-            <p>La densidad de respuestas directas es la proporción de consultas de usuario que reciben una definición clara y sintetizada en menos de 60 palabras al inicio de la sección temática.</p>
+            <h1>Complete Guide to AEO</h1>
+            <h2>What is direct answer density?</h2>
+            <p>Direct answer density is the proportion of user queries that receive a clear, synthesized definition in fewer than 60 words at the beginning of the topic section.</p>
             
-            <h2>Estructuración Semántica para RAG</h2>
-            <p>Dividir el texto en bloques de 200 a 400 tokens optimiza la precisión de búsqueda semántica vectorial en modelos como OpenAI y Cohere.</p>
+            <h2>Semantic Structuring for RAG</h2>
+            <p>Partitioning text into structured 200 to 400 token passages optimizes semantic vector search accuracy across models like OpenAI and Cohere.</p>
           </article>
         </main>
       </body>
@@ -71,9 +71,9 @@ describe('Runner and Aggregator Full Pipeline', () => {
     expect(report.categories['content-chunking']?.score).toBeGreaterThanOrEqual(0.8);
     expect(report.categories['direct-answer-density']?.score).toBe(1);
 
-    // Verificar generación de reportes
+    // Verify report generators
     const terminalOutput = TerminalReporter.generate(report);
-    expect(terminalOutput).toContain('Score General AEO');
+    expect(terminalOutput).toContain('Overall AEO Score');
     expect(terminalOutput).toContain('AI Accessibility & Crawling');
 
     const htmlOutput = HtmlReporter.generate(report);

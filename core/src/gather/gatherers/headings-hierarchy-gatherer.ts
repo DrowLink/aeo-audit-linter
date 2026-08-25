@@ -1,5 +1,5 @@
 /**
- * @fileoverview HeadingsHierarchyGatherer para evaluar la jerarquía y secuencia H1-H6.
+ * @fileoverview HeadingsHierarchyGatherer to evaluate H1-H6 sequential hierarchy and structure.
  */
 
 import * as cheerio from 'cheerio';
@@ -44,7 +44,7 @@ export class HeadingsHierarchyGatherer extends Gatherer<'HeadingsHierarchy'> {
       const prev = headings[i - 1];
       const curr = headings[i];
 
-      // Un salto de nivel ocurre cuando se incrementa la profundidad en más de 1 nivel (e.g. h1 -> h3)
+      // A skipped level occurs when heading depth increases by more than 1 (e.g. h1 -> h3)
       if (curr.level > prev.level + 1) {
         isHierarchySequential = false;
         skippedLevels.push({

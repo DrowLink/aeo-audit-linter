@@ -1,19 +1,19 @@
 /**
- * @fileoverview Generador de reportes HTML interactivos con diseño visual inspirado en Google Lighthouse.
+ * @fileoverview Generates standalone interactive HTML reports inspired by Google Lighthouse.
  */
 
 import type { AeoReportResult, CategoryResult, AuditResult } from '../types/index.js';
 
 export class HtmlReporter {
   /**
-   * Genera un documento HTML standalone autocontenido con diseño moderno, gauges de puntuación y tablas interactivas.
+   * Generates a self-contained HTML document with score gauges and audit breakdowns.
    */
   public static generate(report: AeoReportResult): string {
     const getScoreColor = (score: number | null): string => {
       if (score === null) return '#9e9e9e';
-      if (score >= 0.9 || score >= 90) return '#0cce6b'; // Verde Lighthouse
-      if (score >= 0.5 || score >= 50) return '#ffa400'; // Naranja Lighthouse
-      return '#ff4e42'; // Rojo Lighthouse
+      if (score >= 0.9 || score >= 90) return '#0cce6b'; // Lighthouse Green
+      if (score >= 0.5 || score >= 50) return '#ffa400'; // Lighthouse Orange
+      return '#ff4e42'; // Lighthouse Red
     };
 
     const getScoreCategoryClass = (score: number | null): string => {
@@ -92,7 +92,7 @@ export class HtmlReporter {
           </summary>
           <div class="audit-body">
             <p class="audit-desc">${audit.description}</p>
-            ${audit.explanation ? `<p class="audit-explanation"><strong>Diagnóstico:</strong> ${audit.explanation}</p>` : ''}
+            ${audit.explanation ? `<p class="audit-explanation"><strong>Diagnostic:</strong> ${audit.explanation}</p>` : ''}
             ${detailsHtml}
           </div>
         </details>
@@ -120,7 +120,7 @@ export class HtmlReporter {
     };
 
     return `<!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -270,13 +270,13 @@ export class HtmlReporter {
     <div class="container">
       <div class="brand">AEO Linter Engine &bull; Lighthouse Architecture</div>
       <h1>${report.url}</h1>
-      <p class="meta">Analizado el ${new Date(report.fetchTime).toLocaleString()} | AEO v${report.aeoVersion}</p>
+      <p class="meta">Audited on ${new Date(report.fetchTime).toLocaleString('en-US')} | AEO v${report.aeoVersion}</p>
     </div>
   </header>
 
   <main class="container">
     <div class="gauges-grid">
-      ${renderGauge(report.overallScore, 'Score General AEO')}
+      ${renderGauge(report.overallScore, 'Overall AEO Score')}
       ${Object.values(report.categories)
         .map((cat) => renderGauge(cat.score !== null ? Math.round(cat.score * 100) : 0, cat.title))
         .join('')}

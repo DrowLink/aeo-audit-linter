@@ -1,5 +1,5 @@
 /**
- * @fileoverview RobotsTxtGatherer para obtener y parsear robots.txt y evaluar directivas de bots de IA.
+ * @fileoverview RobotsTxtGatherer to fetch and parse robots.txt and evaluate AI bot directives.
  */
 
 import { Gatherer } from '../gatherer.js';
@@ -22,14 +22,13 @@ export class RobotsTxtGatherer extends Gatherer<'RobotsTxt'> {
       statusCode = response.status;
       if (response.ok) {
         const text = await response.text();
-        // Verificar que no sea una página de error 404 disfrazada de HTML
+        // Verify it is not an HTML 404 page masquerading as 200
         if (!text.trim().toLowerCase().startsWith('<!doctype html') && !text.trim().toLowerCase().startsWith('<html')) {
           rawContent = text;
           exists = true;
         }
       }
     } catch {
-      // Ignorar errores de red y marcar como no existente
       exists = false;
     }
 
@@ -72,7 +71,6 @@ export class RobotsTxtGatherer extends Gatherer<'RobotsTxt'> {
 
       if (key === 'user-agent') {
         const agent = value.toLowerCase();
-        // Si veníamos procesando otro grupo, iniciamos nuevo grupo si no es consecutivo
         currentAgents = [agent];
         if (!rulesByAgent[agent]) {
           rulesByAgent[agent] = {

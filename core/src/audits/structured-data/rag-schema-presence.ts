@@ -1,5 +1,5 @@
 /**
- * @fileoverview Auditoría para evaluar la presencia de esquemas de alto valor para RAG
+ * @fileoverview Audit evaluating presence of high-value schemas for RAG & Answer Engines
  */
 
 import { Audit } from '../audit.js';
@@ -8,10 +8,10 @@ import type { Artifacts, AuditMeta, AuditResult } from '../../types/index.js';
 export class RagSchemaPresenceAudit extends Audit {
   public static override meta: AuditMeta = {
     id: 'rag-schema-presence',
-    title: 'La página implementa esquemas JSON-LD optimizados para RAG (FAQ, HowTo, Article)',
-    failureTitle: 'Faltan esquemas estructurados de alto valor para RAG',
+    title: 'Page implements RAG-optimized JSON-LD schemas (FAQPage, HowTo, Article)',
+    failureTitle: 'Missing high-value structured schemas for RAG',
     description:
-      'Los esquemas como FAQPage, HowTo, QAPage y Article permiten a los Answer Engines extraer pares pregunta-respuesta y contenido estructurado directamente en sus respuestas sintetizadas.',
+      'Schemas like FAQPage, HowTo, QAPage, and Article enable Answer Engines to extract Q&A pairs and step-by-step information directly into synthesized answers.',
     requiredArtifacts: ['JSONLD'],
   };
 
@@ -19,10 +19,10 @@ export class RagSchemaPresenceAudit extends Audit {
     const jsonld = artifacts.JSONLD;
 
     const ragSchemas = [
-      { name: 'FAQPage', present: jsonld.hasFAQPage, value: 'Pares Q&A directos' },
-      { name: 'HowTo / QAPage', present: jsonld.hasHowTo || jsonld.hasQAPage, value: 'Instrucciones paso a paso' },
-      { name: 'Article / TechArticle', present: jsonld.hasArticle, value: 'Metadatos de autoría y contenido' },
-      { name: 'Organization / Product', present: jsonld.hasOrganization || jsonld.hasProduct, value: 'Entidad de negocio / producto' },
+      { name: 'FAQPage', present: jsonld.hasFAQPage, value: 'Direct Q&A pairs' },
+      { name: 'HowTo / QAPage', present: jsonld.hasHowTo || jsonld.hasQAPage, value: 'Step-by-step instructional procedures' },
+      { name: 'Article / TechArticle', present: jsonld.hasArticle, value: 'Authorship and content metadata' },
+      { name: 'Organization / Product', present: jsonld.hasOrganization || jsonld.hasProduct, value: 'Business entity / product metadata' },
     ];
 
     const presentCount = ragSchemas.filter((s) => s.present).length;
@@ -37,18 +37,18 @@ export class RagSchemaPresenceAudit extends Audit {
 
     const tableItems = ragSchemas.map((s) => ({
       schema: s.name,
-      status: s.present ? 'Implementado' : 'No encontrado',
+      status: s.present ? 'Implemented' : 'Not found',
       benefit: s.value,
     }));
 
     return this.generateAuditResult({
       score,
-      displayValue: `${presentCount} tipo(s) de esquema RAG detectados`,
+      displayValue: `${presentCount} RAG schema type(s) detected`,
       details: this.makeTableDetails(
         [
-          { key: 'schema', label: 'Tipo de Esquema', valueType: 'code' },
-          { key: 'status', label: 'Estado', valueType: 'status' },
-          { key: 'benefit', label: 'Impacto en RAG / AEO', valueType: 'text' },
+          { key: 'schema', label: 'Schema Type', valueType: 'code' },
+          { key: 'status', label: 'Status', valueType: 'status' },
+          { key: 'benefit', label: 'Impact on RAG / AEO', valueType: 'text' },
         ],
         tableItems
       ),

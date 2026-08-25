@@ -1,6 +1,6 @@
 /**
- * @fileoverview Agregador ponderado de resultados de auditorías en categorías y cálculo del score general AEO.
- * Sigue fielmente la fórmula de ponderación de Google Lighthouse.
+ * @fileoverview Weighted aggregator of audit results into categories and overall AEO score calculation.
+ * Follows the Google Lighthouse score weighting formula.
  */
 
 import type {
@@ -12,7 +12,7 @@ import type {
 
 export class Aggregator {
   /**
-   * Agrupa los resultados de auditorías en sus categorías y calcula puntuaciones ponderadas.
+   * Groups audit results into configured categories and calculates weighted scores.
    */
   public static aggregate(options: {
     url: string;
@@ -41,7 +41,7 @@ export class Aggregator {
           result,
         });
 
-        // Solo sumamos al score si tiene un puntaje numérico (ignora notApplicable / informative)
+        // Only contribute to score if it's a numeric score (ignores notApplicable / informative)
         if (typeof result.score === 'number') {
           catWeightedSum += result.score * auditRef.weight;
           catTotalWeight += auditRef.weight;
@@ -71,7 +71,7 @@ export class Aggregator {
     return {
       url,
       fetchTime: new Date().toISOString(),
-      aeoVersion: '0.1.0',
+      aeoVersion: '0.1.2',
       userAgent,
       overallScore,
       categories,

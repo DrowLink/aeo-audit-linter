@@ -1,5 +1,5 @@
 /**
- * @fileoverview Auditoría para evaluar el uso de etiquetas HTML5 semánticas (<article>, <section>, <main>)
+ * @fileoverview Audit evaluating semantic HTML5 container elements (<main>, <article>, <section>)
  */
 
 import { Audit } from '../audit.js';
@@ -8,10 +8,10 @@ import type { Artifacts, AuditMeta, AuditResult } from '../../types/index.js';
 export class SemanticContainersAudit extends Audit {
   public static override meta: AuditMeta = {
     id: 'semantic-containers',
-    title: 'El contenido utiliza contenedores semánticos (<main>, <article>, <section>)',
-    failureTitle: 'El contenido depende de <div> genéricos sin estructura semántica HTML5',
+    title: 'Content uses semantic HTML5 containers (<main>, <article>, <section>)',
+    failureTitle: 'Content relies on generic <div> wrappers without semantic HTML5 markup',
     description:
-      'Las etiquetas semánticas como <main>, <article> y <section> delimitan el contenido principal respecto al boilerplate (nav, sidebar, footer), facilitando el chunking limpio en parsers de IA.',
+      'Semantic tags like <main>, <article>, and <section> isolate primary content from boilerplate (nav, sidebar, footer), improving chunk clean extraction for AI parsers.',
     requiredArtifacts: ['ContentChunks'],
   };
 
@@ -28,13 +28,13 @@ export class SemanticContainersAudit extends Audit {
       score = 0.7;
     }
 
-    const tags = chunks.semanticTagsUsed.length > 0 ? chunks.semanticTagsUsed.join(', ') : 'Ninguna (<div/body>)';
+    const tags = chunks.semanticTagsUsed.length > 0 ? chunks.semanticTagsUsed.join(', ') : 'None (<div/body>)';
 
     return this.generateAuditResult({
       score,
-      displayValue: `Etiquetas semánticas detectadas: ${tags}`,
+      displayValue: `Semantic tags detected: ${tags}`,
       explanation: score < 1
-        ? 'Recomendamos encapsular el contenido clave dentro de <main> y subdividirlo en <article> o <section>.'
+        ? 'We recommend wrapping primary content within <main> and partitioning with <article> or <section>.'
         : undefined,
     });
   }

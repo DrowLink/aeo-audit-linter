@@ -1,5 +1,5 @@
 /**
- * @fileoverview ContentChunksGatherer para segmentación semántica de contenido y estimación de tokens para RAG.
+ * @fileoverview ContentChunksGatherer for semantic content chunking and token density estimation for RAG.
  */
 
 import * as cheerio from 'cheerio';
@@ -13,7 +13,7 @@ export class ContentChunksGatherer extends Gatherer<'ContentChunks'> {
     const html = await context.driver.getHtml();
     const $ = cheerio.load(html);
 
-    // Remover scripts, styles, navs redundantes para el análisis de contenido textual
+    // Remove boilerplate non-content tags
     $('script, style, noscript, svg, nav, footer, header').remove();
 
     const semanticTagsUsed: string[] = [];
@@ -24,7 +24,6 @@ export class ContentChunksGatherer extends Gatherer<'ContentChunks'> {
     const chunks: ContentChunk[] = [];
     let chunkCounter = 0;
 
-    // Buscar secciones o elementos principales
     const contentContainers = $('article, section, main');
     const targetElements = contentContainers.length > 0 ? contentContainers : $('body');
 
@@ -32,7 +31,6 @@ export class ContentChunksGatherer extends Gatherer<'ContentChunks'> {
       const containerTag = container.tagName.toLowerCase();
       const isSemantic = ['article', 'section', 'main'].includes(containerTag);
 
-      // Dividir el contenedor por encabezados internos o párrafos
       const subNodes = $(container).children('h1, h2, h3, h4, p, ul, ol, table, pre');
 
       let currentHeading: { text: string; level: number } | undefined = undefined;
@@ -47,7 +45,7 @@ export class ContentChunksGatherer extends Gatherer<'ContentChunks'> {
 
         const words = text.split(/\s+/).filter(Boolean);
         const wordCount = words.length;
-        if (wordCount < 10) return; // Ignorar fragmentos irrelevantes
+        if (wordCount < 10) return; // Ignore small noise fragments
 
         const estimatedTokens = Math.round(wordCount * 1.3);
 
@@ -83,7 +81,7 @@ export class ContentChunksGatherer extends Gatherer<'ContentChunks'> {
           if (tag === 'pre' || $(el).find('code').length > 0) hasCode = true;
 
           bufferText += ' ' + $(el).text().trim();
-          // Si el chunk supera ~350 palabras, creamos un sub-chunk para embeddings
+          // Split into a subchunk if exceeding ~350 words for embeddings
           if (bufferText.split(/\s+/).length > 350) {
             flushChunk();
           }

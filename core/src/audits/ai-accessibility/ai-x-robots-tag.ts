@@ -1,5 +1,5 @@
 /**
- * @fileoverview Auditoría que verifica las cabeceras HTTP X-Robots-Tag para indexación por IA
+ * @fileoverview Audit verifying HTTP X-Robots-Tag headers for AI indexing permissions
  */
 
 import { Audit } from '../audit.js';
@@ -8,10 +8,10 @@ import type { Artifacts, AuditMeta, AuditResult } from '../../types/index.js';
 export class AiXRobotsTagAudit extends Audit {
   public static override meta: AuditMeta = {
     id: 'ai-x-robots-tag',
-    title: 'Las cabeceras HTTP no bloquean la indexación ni el archivo de IA',
-    failureTitle: 'Las cabeceras HTTP X-Robots-Tag restringen la indexación',
+    title: 'HTTP headers do not block AI indexing or archiving',
+    failureTitle: 'HTTP X-Robots-Tag headers restrict AI indexing or archiving',
     description:
-      'Directivas como `noindex`, `noarchive` o `noai` en la cabecera HTTP `X-Robots-Tag` impiden que los motores de IA almacenen en caché y procesen la página en sus pipelines de recuperación.',
+      'Directives like `noindex`, `noarchive`, or `noai` in the `X-Robots-Tag` HTTP header prevent AI search models from caching and retrieving the page in RAG pipelines.',
     requiredArtifacts: ['HttpHeaders'],
   };
 
@@ -21,7 +21,7 @@ export class AiXRobotsTagAudit extends Audit {
     if (!xRobots) {
       return this.generateAuditResult({
         score: 1,
-        displayValue: 'Cabecera X-Robots-Tag limpia (sin restricciones)',
+        displayValue: 'Clean X-Robots-Tag header (no restrictions)',
       });
     }
 
@@ -34,10 +34,10 @@ export class AiXRobotsTagAudit extends Audit {
     return this.generateAuditResult({
       score: isBlocked ? 0 : 1,
       displayValue: isBlocked
-        ? `Directivas bloqueantes encontradas: ${foundBlocking.join(', ')}`
-        : `Directivas permisivas: ${xRobots}`,
+        ? `Blocking directives detected: ${foundBlocking.join(', ')}`
+        : `Permissive directives: ${xRobots}`,
       explanation: isBlocked
-        ? `Se detectó '${xRobots}' en la cabecera X-Robots-Tag, lo cual impide el análisis por modelos de lenguaje.`
+        ? `Detected '${xRobots}' in X-Robots-Tag header, preventing analysis by language models.`
         : undefined,
     });
   }

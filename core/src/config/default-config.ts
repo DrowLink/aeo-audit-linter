@@ -1,6 +1,6 @@
 /**
- * @fileoverview Configuración por defecto de AEO Linter con ponderaciones de categorías y auditorías.
- * Estructurado fielmente al modelo de configuración de Google Lighthouse (categories + auditRefs con weights).
+ * @fileoverview Default AEO Linter configuration with category weights and audit definitions.
+ * Follows the Google Lighthouse configuration model (categories + auditRefs with weights).
  */
 
 import type { LinterConfig } from '../types/config.js';
@@ -14,7 +14,7 @@ export const defaultConfig: LinterConfig = {
     'ai-accessibility': {
       title: 'AI Accessibility & Crawling',
       description:
-        'Verifica que los agentes y rastreadores de IA (GPTBot, PerplexityBot, ClaudeBot, Google-Extended, etc.) tengan acceso sin restricciones innecesarias vía robots.txt y cabeceras HTTP.',
+        'Verifies that AI agents and search crawlers (GPTBot, PerplexityBot, ClaudeBot, Google-Extended, etc.) have unrestricted crawling permissions via robots.txt and HTTP headers.',
       weight: 25,
       auditRefs: [
         { id: 'ai-robots-txt', weight: 10, group: 'crawling' },
@@ -25,7 +25,7 @@ export const defaultConfig: LinterConfig = {
     'structured-data': {
       title: 'Structured Data & RAG Schemas',
       description:
-        'Audita esquemas JSON-LD optimizados para RAG (FAQPage, HowTo, Article, QAPage, sameAs) que enriquecen los grafos de conocimiento de los modelos de lenguaje.',
+        'Audits JSON-LD schemas optimized for RAG (FAQPage, HowTo, Article, QAPage, sameAs) that enrich LLM knowledge graphs with structured entity data.',
       weight: 25,
       auditRefs: [
         { id: 'jsonld-syntax-validity', weight: 8, group: 'schema' },
@@ -36,7 +36,7 @@ export const defaultConfig: LinterConfig = {
     'content-chunking': {
       title: 'Content Chunking & Semantic Structure',
       description:
-        'Evalúa la jerarquía H1-H3, la segmentación semántica (<article>, <section>, <main>) y la densidad de tokens por bloque para facilitar la tokenización y embeddings en RAG.',
+        'Evaluates H1-H3 sequential hierarchy, semantic partitioning (<article>, <section>, <main>), and token density per block for optimal RAG embedding extraction.',
       weight: 25,
       auditRefs: [
         { id: 'heading-hierarchy', weight: 8, group: 'structure' },
@@ -47,7 +47,7 @@ export const defaultConfig: LinterConfig = {
     'direct-answer-density': {
       title: 'Direct Answer Density',
       description:
-        'Detecta la concisión y presencia de respuestas directas e inmediatas a preguntas clave, optimizando la extracción para Answer Engines (Perplexity, SearchGPT, AI Overviews).',
+        'Detects concise, direct definitions and answers to key user questions, optimizing extraction for Answer Engines (Perplexity, SearchGPT, AI Overviews).',
       weight: 25,
       auditRefs: [
         { id: 'direct-definition-answering', weight: 10, group: 'answers' },

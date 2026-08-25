@@ -1,11 +1,11 @@
 /**
- * @fileoverview Tipos y contratos para la fase de Gatherers (recolección).
+ * @fileoverview Types and contracts for Gatherers phase.
  */
 
 import type { Artifacts } from './artifacts.js';
 
 /**
- * Driver abstracto o adaptador de protocolo para extraer información de la página/DOM
+ * Abstract driver or protocol adapter to extract DOM/network information
  */
 export interface Driver {
   evaluate<T>(script: string | (() => T)): Promise<T>;
@@ -16,7 +16,7 @@ export interface Driver {
 }
 
 /**
- * Contexto de recolección entregado a cada Gatherer
+ * Context passed to each Gatherer
  */
 export interface GathererContext {
   url: string;
@@ -25,11 +25,11 @@ export interface GathererContext {
 }
 
 /**
- * Interfaz base para un Gatherer
+ * Gatherer base interface
  */
 export interface IGatherer<K extends keyof Artifacts = keyof Artifacts> {
-  /** Nombre del artefacto que produce */
+  /** Name of the artifact produced */
   name: K;
-  /** Método de recolección */
+  /** Extraction method */
   getArtifact(context: GathererContext): Promise<Artifacts[K]>;
 }

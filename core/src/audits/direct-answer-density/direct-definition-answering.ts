@@ -1,5 +1,5 @@
 /**
- * @fileoverview Auditoría para evaluar la presencia de definiciones directas a preguntas clave
+ * @fileoverview Audit evaluating presence of direct definitions answering key questions
  */
 
 import { Audit } from '../audit.js';
@@ -8,10 +8,10 @@ import type { Artifacts, AuditMeta, AuditResult } from '../../types/index.js';
 export class DirectDefinitionAnsweringAudit extends Audit {
   public static override meta: AuditMeta = {
     id: 'direct-definition-answering',
-    title: 'Las preguntas clave se responden de forma directa con definiciones claras en el primer párrafo',
-    failureTitle: 'Faltan respuestas directas o definiciones claras tras las preguntas clave',
+    title: 'Key questions are answered directly with clear definitions in the opening paragraph',
+    failureTitle: 'Missing direct answers or clear definitions following key questions',
     description:
-      'Los Answer Engines (Perplexity, SearchGPT, Google AI Overviews) seleccionan pasajes que entregan una respuesta directa en las primeras líneas (e.g. "X es un...", "El proceso consiste en..."), en lugar de rodeos introductorios.',
+      'Answer Engines (Perplexity, SearchGPT, Google AI Overviews) prioritize passages that deliver a direct answer in the opening lines (e.g. "X is a...", "The process involves..."), rather than introductory filler.',
     requiredArtifacts: ['DirectAnswers'],
   };
 
@@ -22,8 +22,8 @@ export class DirectDefinitionAnsweringAudit extends Audit {
     if (pairs.length === 0) {
       return this.generateAuditResult({
         score: 0.5,
-        displayValue: 'No se detectaron preguntas en encabezados para evaluar respuestas directas',
-        explanation: 'Incorporar encabezados con formato de pregunta (e.g. "¿Qué es X?") favorece la captura de snippets en Answer Engines.',
+        displayValue: 'No questions detected in headings to evaluate direct answers',
+        explanation: 'Structuring headings as questions (e.g. "What is X?") improves snippet extraction in Answer Engines.',
       });
     }
 
@@ -33,19 +33,19 @@ export class DirectDefinitionAnsweringAudit extends Audit {
     const tableItems = pairs.map((p) => ({
       question: p.question,
       words: p.answerWordCount,
-      hasDef: p.hasDirectDefinition ? 'Sí (Definición clara)' : 'No (Indirecto o descriptivo)',
+      hasDef: p.hasDirectDefinition ? 'Yes (Clear definition)' : 'No (Indirect / descriptive)',
       preview: p.answerText.length > 80 ? p.answerText.slice(0, 80) + '...' : p.answerText,
     }));
 
     return this.generateAuditResult({
       score: definitionPairs.length > 0 ? (score >= 0.5 ? 1 : 0.7) : 0.4,
-      displayValue: `${definitionPairs.length} de ${pairs.length} preguntas responden con definición directa inmediata`,
+      displayValue: `${definitionPairs.length} of ${pairs.length} questions provide immediate direct definitions`,
       details: this.makeTableDetails(
         [
-          { key: 'question', label: 'Pregunta Detectada', valueType: 'text' },
-          { key: 'hasDef', label: 'Patrón de Respuesta', valueType: 'status' },
-          { key: 'words', label: 'Palabras', valueType: 'numeric' },
-          { key: 'preview', label: 'Extracto de Respuesta', valueType: 'text' },
+          { key: 'question', label: 'Detected Question', valueType: 'text' },
+          { key: 'hasDef', label: 'Answer Pattern', valueType: 'status' },
+          { key: 'words', label: 'Words', valueType: 'numeric' },
+          { key: 'preview', label: 'Answer Extract', valueType: 'text' },
         ],
         tableItems
       ),

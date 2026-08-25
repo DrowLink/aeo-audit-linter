@@ -1,5 +1,5 @@
 /**
- * @fileoverview Auditoría para evaluar la formulación de preguntas orientadas a intención de búsqueda en encabezados
+ * @fileoverview Audit evaluating question-formulated search intent subheadings
  */
 
 import { Audit } from '../audit.js';
@@ -8,10 +8,10 @@ import type { Artifacts, AuditMeta, AuditResult } from '../../types/index.js';
 export class QuestionHeadingAlignmentAudit extends Audit {
   public static override meta: AuditMeta = {
     id: 'question-heading-alignment',
-    title: 'Se estructuran encabezados explícitos en formato de pregunta o consulta de usuario',
-    failureTitle: 'Faltan encabezados orientados a consultas de búsqueda o preguntas frecuentes',
+    title: 'Headings are structured as explicit questions or search queries',
+    failureTitle: 'Lacks subheadings phrased as search queries or FAQs',
     description:
-      'Formular encabezados (H2/H3) como preguntas naturales (e.g. "¿Cómo funciona X?", "¿Por qué elegir Y?") incrementa sustancialmente el match semántico en búsquedas vectoriales y RAG.',
+      'Formulating subheadings (H2/H3) as natural questions (e.g. "How does X work?", "Why choose Y?") significantly boosts semantic match in vector search and RAG.',
     requiredArtifacts: ['HeadingsHierarchy', 'DirectAnswers'],
   };
 
@@ -25,7 +25,7 @@ export class QuestionHeadingAlignmentAudit extends Audit {
     if (totalSubheadings === 0) {
       return this.generateAuditResult({
         score: 0.5,
-        displayValue: 'No se encontraron subtítulos H2 o H3',
+        displayValue: 'No H2 or H3 subheadings found',
       });
     }
 
@@ -34,9 +34,9 @@ export class QuestionHeadingAlignmentAudit extends Audit {
 
     return this.generateAuditResult({
       score,
-      displayValue: `${questionHeadings} de ${totalSubheadings} subtítulos estructurados como pregunta`,
+      displayValue: `${questionHeadings} of ${totalSubheadings} subheadings phrased as questions`,
       explanation: questionHeadings === 0
-        ? 'Recomendamos redactar al menos 1 o 2 subtítulos H2/H3 como preguntas directas que los usuarios suelen consultar.'
+        ? 'We recommend phrasing at least 1 or 2 H2/H3 subheadings as direct user questions.'
         : undefined,
     });
   }

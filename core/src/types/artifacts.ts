@@ -1,11 +1,11 @@
 /**
- * @fileoverview Tipos y contratos para los artefactos recolectados por los Gatherers.
- * Siguiendo el patrón de Google Lighthouse, los Gatherers extraen datos crudos del DOM/red
- * y producen un objeto tipado `Artifacts` que las auditorías consumen como funciones puras.
+ * @fileoverview Types and contracts for raw artifacts collected by Gatherers.
+ * Following the Google Lighthouse pattern, Gatherers extract raw DOM/network data
+ * and produce a typed `Artifacts` object consumed by pure Audits.
  */
 
 /**
- * Información de URL navegada y redirigida
+ * Navigated and resolved URL information
  */
 export interface URLArtifact {
   requestedUrl: string;
@@ -16,7 +16,7 @@ export interface URLArtifact {
 }
 
 /**
- * Regla de acceso para un User-Agent específico en robots.txt
+ * User-Agent specific rule in robots.txt
  */
 export interface RobotsAgentRule {
   userAgent: string;
@@ -26,16 +26,16 @@ export interface RobotsAgentRule {
 }
 
 /**
- * Artefacto con el contenido e interpretación del archivo robots.txt
+ * Robots.txt parsed artifact and AI bot directives
  */
 export interface RobotsTxtArtifact {
   rawContent: string | null;
   statusCode: number | null;
   exists: boolean;
   sitemaps: string[];
-  /** Reglas por User-Agent mapeadas por nombre en minúsculas */
+  /** Rules by agent mapped by lowercase user-agent name */
   rulesByAgent: Record<string, RobotsAgentRule>;
-  /** Directivas específicas identificadas para bots de IA conocidos */
+  /** Crawling status identified for known AI search bots */
   aiBotsStatus: {
     gptBot?: 'allowed' | 'disallowed' | 'partially_disallowed' | 'not_specified';
     perplexityBot?: 'allowed' | 'disallowed' | 'partially_disallowed' | 'not_specified';
@@ -48,7 +48,7 @@ export interface RobotsTxtArtifact {
 }
 
 /**
- * Encabezados HTTP recolectados de la respuesta principal
+ * HTTP response headers artifact
  */
 export interface HttpHeadersArtifact {
   statusCode: number;
@@ -60,7 +60,7 @@ export interface HttpHeadersArtifact {
 }
 
 /**
- * Item o nodo JSON-LD individual extraído del documento
+ * Extracted JSON-LD item or node
  */
 export interface JSONLDItem {
   raw: string;
@@ -72,7 +72,7 @@ export interface JSONLDItem {
 }
 
 /**
- * Artefacto de datos estructurados JSON-LD
+ * JSON-LD structured data artifact
  */
 export interface JSONLDArtifact {
   items: JSONLDItem[];
@@ -88,7 +88,7 @@ export interface JSONLDArtifact {
 }
 
 /**
- * Meta etiquetas y atributos de cabecera HTML
+ * HTML meta tags and document metadata
  */
 export interface MetaTagsArtifact {
   title: string | null;
@@ -102,7 +102,7 @@ export interface MetaTagsArtifact {
 }
 
 /**
- * Elemento de encabezado en la jerarquía del DOM
+ * Heading node in DOM hierarchy
  */
 export interface HeadingNode {
   level: 1 | 2 | 3 | 4 | 5 | 6;
@@ -113,7 +113,7 @@ export interface HeadingNode {
 }
 
 /**
- * Artefacto con el análisis de jerarquía de encabezados (H1-H6)
+ * Heading hierarchy (H1-H6) artifact
  */
 export interface HeadingsHierarchyArtifact {
   headings: HeadingNode[];
@@ -126,7 +126,7 @@ export interface HeadingsHierarchyArtifact {
 }
 
 /**
- * Bloque o chunk de contenido semántico orientado a ingestión RAG / LLM
+ * Semantic content chunk for RAG / LLM ingestion
  */
 export interface ContentChunk {
   id: string;
@@ -143,7 +143,7 @@ export interface ContentChunk {
 }
 
 /**
- * Artefacto de fragmentación de contenido semántico (Chunking)
+ * Semantic content chunking artifact
  */
 export interface ContentChunksArtifact {
   chunks: ContentChunk[];
@@ -157,31 +157,30 @@ export interface ContentChunksArtifact {
 }
 
 /**
- * Detección de patrones de pregunta y respuesta directa en el contenido
+ * Detected question and direct answer pair
  */
 export interface DirectAnswerPair {
   question: string;
   questionSource: 'heading' | 'bold_text' | 'faq_schema' | 'paragraph';
   answerText: string;
   answerWordCount: number;
-  isConcise: boolean; // 30 - 60 palabras ideal para answer engines
-  hasDirectDefinition: boolean; // e.g., "X es un...", "El término X se refiere a..."
+  isConcise: boolean; // 30 - 60 words ideal for answer engines
+  hasDirectDefinition: boolean;
   confidenceScore: number;
 }
 
 /**
- * Artefacto con la densidad de respuestas directas identificadas
+ * Direct answer density artifact
  */
 export interface DirectAnswersArtifact {
   pairs: DirectAnswerPair[];
-  directAnswerRatio: number; // Porcentaje de preguntas que cuentan con respuesta directa inmediata
+  directAnswerRatio: number;
   conciseAnswersCount: number;
   definitionPatternsFound: number;
 }
 
 /**
- * Contrato principal de artefactos recopilados por el pipeline de Gatherers.
- * Este objeto es inmutable y se entrega a cada Audit.
+ * Global immutable Artifacts container passed to Audits
  */
 export interface Artifacts {
   URL: URLArtifact;
@@ -192,6 +191,5 @@ export interface Artifacts {
   HeadingsHierarchy: HeadingsHierarchyArtifact;
   ContentChunks: ContentChunksArtifact;
   DirectAnswers: DirectAnswersArtifact;
-  /** Espacio para artefactos personalizados de extensiones o plugins */
   [customArtifact: string]: unknown;
 }

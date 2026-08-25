@@ -1,23 +1,23 @@
 /**
- * @fileoverview Tipos y contratos para las auditorías, resultados y detalles.
- * Diseñado replicando fielmente la estructura de Google Lighthouse.
+ * @fileoverview Types and contracts for audits, results, and structured details.
+ * Modeled after the Google Lighthouse result structure.
  */
 
 import type { Artifacts } from './artifacts.js';
 
 /**
- * Modo de presentación visual del puntaje
+ * Score display presentation mode
  */
 export type ScoreDisplayMode =
-  | 'binary'          // Pasa (1) o falla (0)
-  | 'numeric'         // Score continuo entre 0 y 1
-  | 'informative'     // Muestra valor informativo sin penalizar
-  | 'notApplicable'   // No aplica al contexto de la página
-  | 'error'           // Error de ejecución durante la auditoría
-  | 'manual';         // Requiere verificación humana
+  | 'binary'          // Pass (1) or fail (0)
+  | 'numeric'         // Continuous score between 0 and 1
+  | 'informative'     // Informative metric without scoring penalty
+  | 'notApplicable'   // Not applicable to page context
+  | 'error'           // Execution error during audit
+  | 'manual';         // Requires manual verification
 
 /**
- * Encabezado de columna para detalles tabulares
+ * Table column heading
  */
 export interface TableHeading {
   key: string;
@@ -30,7 +30,7 @@ export interface TableHeading {
 }
 
 /**
- * Detalle tipo tabla para mostrar elementos evaluados
+ * Tabular details for itemized findings
  */
 export interface TableDetails {
   type: 'table';
@@ -45,7 +45,7 @@ export interface TableDetails {
 }
 
 /**
- * Detalle tipo lista simple de hallazgos
+ * List details for simple findings
  */
 export interface ListDetails {
   type: 'list';
@@ -53,7 +53,7 @@ export interface ListDetails {
 }
 
 /**
- * Detalle para datos de depuración / inspección cruda
+ * Debug details for raw inspection
  */
 export interface DebugDataDetails {
   type: 'debugdata';
@@ -61,7 +61,7 @@ export interface DebugDataDetails {
 }
 
 /**
- * Detalle para oportunidades de mejora con ahorros o ganancias
+ * Opportunity details for potential gains
  */
 export interface OpportunityDetails {
   type: 'opportunity';
@@ -71,7 +71,7 @@ export interface OpportunityDetails {
 }
 
 /**
- * Unión de tipos de detalles admitidos en el resultado de auditoría
+ * Union of supported audit detail formats
  */
 export type AuditDetails =
   | TableDetails
@@ -80,53 +80,53 @@ export type AuditDetails =
   | OpportunityDetails;
 
 /**
- * Resultado formal retornado por la ejecución de una auditoría
+ * Standard audit result object
  */
 export interface AuditResult {
-  /** Identificador único de la auditoría (e.g. 'ai-robots-txt') */
+  /** Unique audit ID (e.g. 'ai-robots-txt') */
   id: string;
-  /** Puntaje normalizado entre 0 y 1 (o null si es notApplicable / informative) */
+  /** Normalized score between 0 and 1 (or null if notApplicable / informative) */
   score: number | null;
-  /** Modo de visualización del score */
+  /** Presentation mode */
   scoreDisplayMode: ScoreDisplayMode;
-  /** Título descriptivo (en estado exitoso o general) */
+  /** Descriptive title */
   title: string;
-  /** Explicación detallada de la auditoría y por qué es importante para AEO */
+  /** Detailed description of importance for AEO */
   description: string;
-  /** Valor numérico crudo asociado (e.g. 85 para 85 palabras o 3 para 3 errores) */
+  /** Raw numeric metric value */
   numericValue?: number;
-  /** Unidad del valor numérico (e.g. 'words', 'ms', 'items', '%') */
+  /** Numeric metric unit (e.g. 'words', 'ms', 'items', '%') */
   numericUnit?: string;
-  /** Texto formateado para presentación directa (e.g. "3 direct answers found") */
+  /** Formatted display string */
   displayValue?: string;
-  /** Razón por la cual la auditoría falló o dio este score */
+  /** Diagnostic reason / explanation */
   explanation?: string;
-  /** Mensaje de error si la auditoría falló al ejecutarse */
+  /** Error message if execution failed */
   errorMessage?: string;
-  /** Detalles estructurados para rendering en UI/CLI */
+  /** Structured details for UI/CLI */
   details?: AuditDetails;
-  /** Advertencias opcionales que no invalidan el score pero informan al usuario */
+  /** Optional informational warnings */
   warnings?: string[];
 }
 
 /**
- * Metadatos estáticos requeridos por cada definición de auditoría
+ * Static metadata required by each audit definition
  */
 export interface AuditMeta {
-  /** ID único de la auditoría */
+  /** Unique audit ID */
   id: string;
-  /** Título cuando pasa o título neutral */
+  /** Title when passing or neutral */
   title: string;
-  /** Título cuando la auditoría falla o no alcanza el score deseado */
+  /** Title when failing */
   failureTitle?: string;
-  /** Explicación y enlaces de documentación (Markdown) */
+  /** Markdown description and documentation links */
   description: string;
-  /** Artefactos que esta auditoría requiere para poder ejecutarse */
+  /** Required artifacts for this audit */
   requiredArtifacts: Array<keyof Artifacts>;
 }
 
 /**
- * Contexto de ejecución pasado a la función de auditoría
+ * Execution context passed to audit function
  */
 export interface AuditContext {
   options?: Record<string, unknown>;

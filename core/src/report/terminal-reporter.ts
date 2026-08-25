@@ -1,5 +1,5 @@
 /**
- * @fileoverview Formateador de resultados para la salida estándar en terminal (CLI).
+ * @fileoverview Formats audit reports for standard terminal / console output.
  */
 
 import type { AeoReportResult } from '../types/index.js';
@@ -20,10 +20,10 @@ export class TerminalReporter {
     lines.push('\x1b[1m\x1b[36m============================================================\x1b[0m');
     lines.push(`\x1b[1m  AEO Linter Report - Answer Engine Optimization\x1b[0m`);
     lines.push(`  URL: \x1b[4m${report.url}\x1b[0m`);
-    lines.push(`  Fecha: ${new Date(report.fetchTime).toLocaleString()}`);
+    lines.push(`  Date: ${new Date(report.fetchTime).toLocaleString('en-US')}`);
     lines.push('\x1b[1m\x1b[36m============================================================\x1b[0m');
     lines.push('');
-    lines.push(`\x1b[1m  Score General AEO: ${formatScore(report.overallScore)} / 100\x1b[0m`);
+    lines.push(`\x1b[1m  Overall AEO Score: ${formatScore(report.overallScore)} / 100\x1b[0m`);
     lines.push('');
 
     for (const cat of Object.values(report.categories)) {

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Auditoría para evaluar la concisión de respuestas (ideal 30 a 60 palabras)
+ * @fileoverview Audit evaluating direct answer conciseness (ideal 30 to 60 words)
  */
 
 import { Audit } from '../audit.js';
@@ -8,10 +8,10 @@ import type { Artifacts, AuditMeta, AuditResult } from '../../types/index.js';
 export class ConciseAnswerWordCountAudit extends Audit {
   public static override meta: AuditMeta = {
     id: 'concise-answer-wordcount',
-    title: 'Las respuestas directas tienen una extensión concisa óptima (30 - 60 palabras)',
-    failureTitle: 'Las respuestas directas son excesivamente extensas o demasiado escuetas',
+    title: 'Direct answers maintain concise length (30 - 60 words)',
+    failureTitle: 'Direct answers are overly verbose or too brief',
     description:
-      'Los modelos de lenguaje prefieren respuestas de 30 a 60 palabras como respuesta inicial o fragmento destacado para sintetizar en sus resúmenes.',
+      'Language models prefer answers between 30 and 60 words as initial featured snippets for synthesis.',
     requiredArtifacts: ['DirectAnswers'],
   };
 
@@ -22,7 +22,7 @@ export class ConciseAnswerWordCountAudit extends Audit {
     if (pairs.length === 0) {
       return this.generateAuditResult({
         score: 0.5,
-        displayValue: 'Sin preguntas detectadas',
+        displayValue: 'No questions detected',
       });
     }
 
@@ -32,19 +32,19 @@ export class ConciseAnswerWordCountAudit extends Audit {
 
     return this.generateAuditResult({
       score,
-      displayValue: `${conciseCount} de ${pairs.length} respuestas con longitud concisa óptima`,
+      displayValue: `${conciseCount} of ${pairs.length} answers have concise length (30-60 words)`,
       numericValue: conciseCount,
-      numericUnit: 'respuestas',
+      numericUnit: 'answers',
       details: this.makeTableDetails(
         [
-          { key: 'question', label: 'Pregunta', valueType: 'text' },
-          { key: 'words', label: 'Conteo de Palabras', valueType: 'numeric' },
-          { key: 'status', label: 'Evaluación', valueType: 'status' },
+          { key: 'question', label: 'Question', valueType: 'text' },
+          { key: 'words', label: 'Word Count', valueType: 'numeric' },
+          { key: 'status', label: 'Evaluation', valueType: 'status' },
         ],
         pairs.map((p) => ({
           question: p.question,
           words: p.answerWordCount,
-          status: p.isConcise ? 'Conciso (30-60 palabras)' : p.answerWordCount < 20 ? 'Demasiado breve' : 'Extenso (>75 palabras)',
+          status: p.isConcise ? 'Concise (30-60 words)' : p.answerWordCount < 20 ? 'Too brief' : 'Verbose (>75 words)',
         }))
       ),
     });

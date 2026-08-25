@@ -1,7 +1,7 @@
 /**
- * @fileoverview Clase base abstracta Audit y utilidades de resultado, siguiendo el diseño de Google Lighthouse.
- * Cada auditoría concreta hereda de Audit e implementa su método estático `audit()` como una función pura
- * que evalúa los artefactos requeridos y produce un `AuditResult`.
+ * @fileoverview Abstract base class Audit and result utilities following the Google Lighthouse pattern.
+ * Concrete audits inherit from Audit and implement their static `audit()` method as a pure function
+ * that evaluates required artifacts and returns an `AuditResult`.
  */
 
 import type {
@@ -18,25 +18,25 @@ import type {
 
 export abstract class Audit {
   /**
-   * Metadatos estáticos de la auditoría.
-   * Debe ser sobrescrito por cada subclase de auditoría concreta.
+   * Static metadata for the audit.
+   * Must be overridden by each concrete audit class.
    */
   public static meta: AuditMeta;
 
   /**
-   * Método puro de ejecución de la auditoría.
-   * @param artifacts Artefactos inmutables recolectados por los Gatherers
-   * @param context Contexto de ejecución opcional
+   * Pure audit evaluation method.
+   * @param artifacts Immutable artifacts collected by Gatherers
+   * @param context Execution context
    */
   public static async audit(
     artifacts: Artifacts,
     context?: AuditContext
   ): Promise<AuditResult> {
-    throw new Error(`El método audit() no ha sido implementado en ${this.name}`);
+    throw new Error(`The audit() method is not implemented in ${this.name}`);
   }
 
   /**
-   * Helper para generar un resultado de auditoría consistente
+   * Helper to generate a standardized audit result
    */
   public static generateAuditResult(options: {
     id?: string;
@@ -85,7 +85,7 @@ export abstract class Audit {
   }
 
   /**
-   * Helper para construir un detalle de tipo tabla (Lighthouse TableDetails)
+   * Helper to construct table details (Lighthouse TableDetails)
    */
   public static makeTableDetails(
     headings: TableHeading[],
@@ -101,7 +101,7 @@ export abstract class Audit {
   }
 
   /**
-   * Helper para construir un detalle de tipo lista
+   * Helper to construct list details
    */
   public static makeListDetails(
     items: Array<string | { text: string; subItems?: string[] }>
@@ -113,14 +113,14 @@ export abstract class Audit {
   }
 
   /**
-   * Helper para calcular puntaje binario
+   * Helper to compute binary score
    */
   public static binaryScore(condition: boolean): number {
     return condition ? 1 : 0;
   }
 
   /**
-   * Helper para calcular puntaje normalizado lineal o acotado
+   * Helper to clamp score between min and max
    */
   public static clampScore(value: number, min = 0, max = 1): number {
     return Math.min(Math.max(value, min), max);

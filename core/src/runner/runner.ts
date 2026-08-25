@@ -1,8 +1,8 @@
 /**
- * @fileoverview Runner principal de AEO Linter. Orquesta el pipeline de 3 fases:
- * 1. Gather (recolección de artefactos)
- * 2. Audit (ejecución de auditorías puras)
- * 3. Aggregate (agregación y cálculo de scores)
+ * @fileoverview Main AEO Linter Runner. Orchestrates the 3-phase pipeline:
+ * 1. Gather (extract raw artifacts)
+ * 2. Audit (run pure deterministic audits)
+ * 3. Aggregate (calculate category weights and global score)
  */
 
 import { CheerioDriver } from '../gather/driver/cheerio-driver.js';
@@ -33,7 +33,7 @@ export interface RunnerOptions {
 
 export class Runner {
   /**
-   * Ejecuta el pipeline completo de auditoría AEO para una URL o HTML provisto
+   * Executes the full AEO audit lifecycle for a given URL
    */
   public static async run(
     targetUrl: string,
@@ -42,24 +42,24 @@ export class Runner {
     const config = options.config || defaultConfig;
     const progress = options.onProgress || (() => {});
 
-    // 1. Inicializar Driver si no fue provisto
-    progress('gather', `Conectando y cargando ${targetUrl}...`);
+    // 1. Initialize Driver
+    progress('gather', `Connecting and loading ${targetUrl}...`);
     const driver =
       options.driver ||
       (await CheerioDriver.createFromUrl(targetUrl, options.fetchFn, {
         userAgent: options.userAgent,
       }));
 
-    // 2. Fase de Gatherers
-    progress('gather', 'Extrayendo artefactos crudos del DOM y red...');
+    // 2. Gather Phase
+    progress('gather', 'Extracting raw artifacts from DOM and network...');
     const artifacts = await this.gatherArtifacts(targetUrl, driver);
 
-    // 3. Fase de Auditorías
-    progress('audit', 'Ejecutando auditorías independientes...');
+    // 3. Audit Phase
+    progress('audit', 'Running pure independent audits...');
     const auditResults = await this.runAudits(artifacts, config);
 
-    // 4. Fase de Agregación
-    progress('aggregate', 'Calculando ponderaciones y score global AEO...');
+    // 4. Aggregate Phase
+    progress('aggregate', 'Computing weighted scores and overall AEO score...');
     const report = Aggregator.aggregate({
       url: artifacts.URL.finalUrl || targetUrl,
       config,
@@ -71,7 +71,7 @@ export class Runner {
   }
 
   /**
-   * Ejecuta los Gatherers para construir el objeto global Artifacts
+   * Runs all Gatherers to build the global Artifacts object
    */
   public static async gatherArtifacts(url: string, driver: Driver): Promise<Artifacts> {
     const context = { url, driver };
@@ -118,7 +118,7 @@ export class Runner {
   }
 
   /**
-   * Ejecuta las auditorías declaradas en la configuración
+   * Executes all audits declared in configuration
    */
   public static async runAudits(
     artifacts: Artifacts,
@@ -126,7 +126,6 @@ export class Runner {
   ): Promise<Record<string, AuditResult>> {
     const auditResults: Record<string, AuditResult> = {};
 
-    // Obtener lista única de IDs de auditoría a partir de la configuración
     const auditIdsToRun = new Set<string>();
 
     if (config.audits) {
@@ -144,7 +143,7 @@ export class Runner {
     for (const auditId of auditIdsToRun) {
       const AuditClass = auditRegistry[auditId];
       if (!AuditClass) {
-        console.warn(`[AEO Runner] Auditoría no registrada: ${auditId}`);
+        console.warn(`[AEO Runner] Unregistered audit: ${auditId}`);
         continue;
       }
 
@@ -156,7 +155,7 @@ export class Runner {
           id: auditId,
           score: 0,
           scoreDisplayMode: 'error',
-          title: `Error al ejecutar auditoría ${auditId}`,
+          title: `Error running audit ${auditId}`,
           description: '',
           errorMessage: err instanceof Error ? err.message : String(err),
         };

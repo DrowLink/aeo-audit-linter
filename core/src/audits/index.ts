@@ -1,5 +1,5 @@
 /**
- * @fileoverview Exportación y registro central de todas las auditorías disponibles
+ * @fileoverview Central registry and exports of all available AEO audits
  */
 
 import { Audit } from './audit.js';

@@ -1,5 +1,5 @@
 /**
- * @fileoverview Auditoría para validar la jerarquía secuencial de encabezados H1-H6
+ * @fileoverview Audit validating sequential heading hierarchy (H1-H6) and single H1 tag
  */
 
 import { Audit } from '../audit.js';
@@ -8,10 +8,10 @@ import type { Artifacts, AuditMeta, AuditResult } from '../../types/index.js';
 export class HeadingHierarchyAudit extends Audit {
   public static override meta: AuditMeta = {
     id: 'heading-hierarchy',
-    title: 'La estructura de encabezados H1-H6 es secuencial y cuenta con un único H1',
-    failureTitle: 'La jerarquía de encabezados contiene saltos de nivel o múltiples H1',
+    title: 'Heading structure (H1-H6) is sequential and contains a single H1',
+    failureTitle: 'Heading hierarchy contains level jumps or multiple H1 tags',
     description:
-      'Una jerarquía clara y secuencial (H1 -> H2 -> H3) permite a los algoritmos de segmentación de RAG indexar el documento en fragmentos con contexto semántico preciso.',
+      'A clear, sequential hierarchy (H1 -> H2 -> H3) allows RAG chunking algorithms to partition documents with accurate semantic context.',
     requiredArtifacts: ['HeadingsHierarchy'],
   };
 
@@ -21,8 +21,8 @@ export class HeadingHierarchyAudit extends Audit {
     if (hierarchy.headings.length === 0) {
       return this.generateAuditResult({
         score: 0,
-        displayValue: 'No se encontraron encabezados (H1-H6)',
-        explanation: 'El documento carece de encabezados semánticos para estructurar el contenido.',
+        displayValue: 'No headings found (H1-H6)',
+        explanation: 'Document lacks semantic headings to structure the content.',
       });
     }
 
@@ -31,28 +31,28 @@ export class HeadingHierarchyAudit extends Audit {
 
     if (hierarchy.h1Count === 0) {
       deductions += 0.4;
-      issues.push('Falta el encabezado principal H1');
+      issues.push('Missing main H1 heading');
     } else if (hierarchy.h1Count > 1) {
       deductions += 0.2;
-      issues.push(`Se detectaron ${hierarchy.h1Count} etiquetas H1 (se recomienda exactamente una)`);
+      issues.push(`Found ${hierarchy.h1Count} H1 tags (exactly one is recommended)`);
     }
 
     if (!hierarchy.isHierarchySequential) {
       deductions += 0.3;
-      issues.push(`Se encontraron ${hierarchy.skippedLevels.length} saltos bruscos de nivel (e.g. H1 a H3)`);
+      issues.push(`Found ${hierarchy.skippedLevels.length} skipped heading levels (e.g. H1 to H3)`);
     }
 
     const score = this.clampScore(1 - deductions);
 
     return this.generateAuditResult({
       score,
-      displayValue: issues.length === 0 ? 'Jerarquía óptima y secuencial' : issues.join(', '),
+      displayValue: issues.length === 0 ? 'Optimal sequential heading hierarchy' : issues.join(', '),
       details: hierarchy.skippedLevels.length > 0
         ? this.makeTableDetails(
             [
-              { key: 'from', label: 'Desde Nivel', valueType: 'code' },
-              { key: 'to', label: 'Hacia Nivel', valueType: 'code' },
-              { key: 'text', label: 'Texto del Encabezado', valueType: 'text' },
+              { key: 'from', label: 'From Level', valueType: 'code' },
+              { key: 'to', label: 'To Level', valueType: 'code' },
+              { key: 'text', label: 'Heading Text', valueType: 'text' },
             ],
             hierarchy.skippedLevels.map((s) => ({
               from: `H${s.from}`,

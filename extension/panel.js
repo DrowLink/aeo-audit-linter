@@ -1,12 +1,12 @@
 /**
- * @fileoverview Panel controller para la extensión Chrome DevTools de AEO Linter.
+ * @fileoverview Panel controller for AEO Linter Chrome DevTools extension.
  */
 
 document.getElementById('run-audit-btn').addEventListener('click', async () => {
   const statusEl = document.getElementById('status');
   const resultsEl = document.getElementById('results');
 
-  statusEl.textContent = 'Extrayendo DOM y evaluando auditorías AEO...';
+  statusEl.textContent = 'Extracting DOM and running AEO audits...';
 
   chrome.devtools.inspectedWindow.eval(
     `(() => {
@@ -17,16 +17,16 @@ document.getElementById('run-audit-btn').addEventListener('click', async () => {
     })()`,
     (pageData, isException) => {
       if (isException || !pageData) {
-        statusEl.textContent = 'Error al inspeccionar la página.';
+        statusEl.textContent = 'Error inspecting current page.';
         return;
       }
 
-      statusEl.textContent = `Auditoría completada para ${pageData.url}`;
+      statusEl.textContent = `AEO Audit completed for ${pageData.url}`;
       resultsEl.innerHTML = `
         <div style="background: #252526; padding: 16px; border-radius: 8px; border: 1px solid #333;">
-          <h3 style="margin-top: 0; color: #4ec9b0;">Auditoría AEO en Ejecución</h3>
-          <p>Longitud del documento HTML: <strong>${pageData.html.length} caracteres</strong></p>
-          <p>Página analizada: <code>${pageData.url}</code></p>
+          <h3 style="margin-top: 0; color: #4ec9b0;">AEO Audit Completed</h3>
+          <p>HTML Document Length: <strong>${pageData.html.length} characters</strong></p>
+          <p>Audited URL: <code>${pageData.url}</code></p>
         </div>
       `;
     }

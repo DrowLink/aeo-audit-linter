@@ -1,5 +1,5 @@
 /**
- * @fileoverview Implementación de Driver basada en Fetch + Cheerio para entornos Node.js / CLI.
+ * @fileoverview Driver implementation based on Fetch + Cheerio for Node.js / CLI environments.
  */
 
 import * as cheerio from 'cheerio';
@@ -30,7 +30,7 @@ export class CheerioDriver implements Driver {
     const defaultHeaders = {
       'User-Agent':
         options?.userAgent ||
-        'Mozilla/5.0 (compatible; AEOLinter/1.0; +https://github.com/aeo-linter)',
+        'Mozilla/5.0 (compatible; AEOLinter/1.0; +https://github.com/DrowLink/aeo-audit-linter)',
       Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
       ...options?.headers,
     };
@@ -41,7 +41,7 @@ export class CheerioDriver implements Driver {
     });
 
     if (!res.ok) {
-      throw new Error(`Error HTTP ${res.status} al cargar ${targetUrl}: ${res.statusText}`);
+      throw new Error(`HTTP ${res.status} error fetching ${targetUrl}: ${res.statusText}`);
     }
 
     const html = await res.text();
@@ -63,7 +63,7 @@ export class CheerioDriver implements Driver {
     if (typeof script === 'function') {
       return script();
     }
-    throw new Error('evaluate() con string no soportado en CheerioDriver');
+    throw new Error('evaluate() with raw string is not supported in CheerioDriver');
   }
 
   public async fetch(url: string, init?: RequestInit): Promise<Response> {

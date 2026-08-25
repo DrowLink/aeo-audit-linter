@@ -2,10 +2,12 @@
  * @fileoverview Controller for AEO Linter Chrome DevTools Panel.
  * Supports:
  * 1. Importing previously saved AEO JSON audit reports (file picker & drag-and-drop).
- * 2. Auditing active tab directly within DevTools.
+ * 2. Auditing active tab directly within DevTools using the full in-browser engine.
  * 3. Exporting audit reports.
  * 4. Rendering interactive Lighthouse-style score gauges and structured tables.
  */
+
+import { BrowserAeoEngine } from './engine.js';
 
 // State
 let currentReport = null;
@@ -21,11 +23,9 @@ const reportContent = document.getElementById('report-content');
 
 // --- 1. Import Handlers ---
 
-// Trigger file input
 btnImport?.addEventListener('click', () => importFileInput?.click());
 btnDropzoneImport?.addEventListener('click', () => importFileInput?.click());
 
-// Handle file selection
 importFileInput?.addEventListener('change', (e) => {
   const file = e.target.files?.[0];
   if (file) {
@@ -65,7 +65,7 @@ function readAndLoadJsonFile(file) {
     try {
       const data = JSON.parse(event.target.result);
       if (!validateAeoReport(data)) {
-        alert('Invalid AEO Report format. The file is missing expected categories or scores.');
+        alert('Invalid AEO Report format. Missing categories or overall score.');
         return;
       }
       currentReport = data;
@@ -96,11 +96,11 @@ btnExportJson?.addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-// --- 3. Audit Active Page Handler (Chrome DevTools) ---
+// --- 3. Audit Active Page Handler (Using BrowserAeoEngine) ---
 
 btnAuditPage?.addEventListener('click', () => {
   if (typeof chrome === 'undefined' || !chrome.devtools || !chrome.devtools.inspectedWindow) {
-    alert('Live page auditing is available when running inside Chrome DevTools. To inspect reports, use "Import JSON".');
+    alert('Live page auditing is active inside Chrome DevTools. To inspect external reports, use "Import JSON".');
     return;
   }
 
@@ -114,7 +114,7 @@ btnAuditPage?.addEventListener('click', () => {
         html: document.documentElement.outerHTML
       };
     })()`,
-    (pageData, isException) => {
+    async (pageData, isException) => {
       btnAuditPage.disabled = false;
       btnAuditPage.textContent = '⚡ Audit Page';
 
@@ -123,141 +123,16 @@ btnAuditPage?.addEventListener('click', () => {
         return;
       }
 
-      // Generate a client-side parsed report summary
-      const clientReport = generateClientReport(pageData.url, pageData.html);
-      currentReport = clientReport;
-      renderReport(currentReport);
+      try {
+        const report = await BrowserAeoEngine.runAudit(pageData.url, pageData.html);
+        currentReport = report;
+        renderReport(currentReport);
+      } catch (err) {
+        alert(`Audit failed: ${err.message}`);
+      }
     }
   );
 });
-
-// Lightweight client-side DOM evaluator for live devtools inspection
-function generateClientReport(url, html) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-
-  // Headings
-  const h1s = doc.querySelectorAll('h1');
-  const h2s = doc.querySelectorAll('h2');
-  const hasSingleH1 = h1s.length === 1;
-
-  // JSON-LD
-  const jsonLdScripts = Array.from(doc.querySelectorAll('script[type="application/ld+json"]'));
-  let hasFAQ = false;
-  let hasOrg = false;
-  let sameAsLinks = [];
-
-  jsonLdScripts.forEach((s) => {
-    try {
-      const parsed = JSON.parse(s.textContent || '{}');
-      const type = parsed['@type'] || '';
-      if (type.includes('FAQPage')) hasFAQ = true;
-      if (type.includes('Organization') || type.includes('Product')) hasOrg = true;
-      if (parsed.sameAs) {
-        if (Array.isArray(parsed.sameAs)) sameAsLinks.push(...parsed.sameAs);
-        else sameAsLinks.push(parsed.sameAs);
-      }
-    } catch {}
-  });
-
-  // Semantic tags
-  const hasMain = doc.querySelector('main') !== null;
-  const hasArticle = doc.querySelector('article') !== null;
-
-  return {
-    url,
-    fetchTime: new Date().toISOString(),
-    aeoVersion: '0.1.3',
-    userAgent: navigator.userAgent,
-    overallScore: Math.round(((hasSingleH1 ? 25 : 10) + (hasFAQ ? 25 : 10) + (hasMain ? 25 : 10) + 20)),
-    categories: {
-      'ai-accessibility': {
-        id: 'ai-accessibility',
-        title: 'AI Accessibility & Crawling',
-        description: 'Verifies crawling permissions and bot access.',
-        score: 0.95,
-        auditRefs: [
-          {
-            id: 'ai-robots-txt',
-            weight: 10,
-            result: {
-              id: 'ai-robots-txt',
-              score: 1,
-              scoreDisplayMode: 'binary',
-              title: 'robots.txt allows crawling by major AI search bots',
-              description: 'AI bots have access to site resources.',
-              displayValue: 'Allowed (Live Tab Inspection)'
-            }
-          }
-        ]
-      },
-      'structured-data': {
-        id: 'structured-data',
-        title: 'Structured Data & RAG Schemas',
-        description: 'Audits JSON-LD schemas optimized for RAG and Knowledge Graphs.',
-        score: hasFAQ ? 1.0 : (jsonLdScripts.length > 0 ? 0.6 : 0.2),
-        auditRefs: [
-          {
-            id: 'rag-schema-presence',
-            weight: 8,
-            result: {
-              id: 'rag-schema-presence',
-              score: hasFAQ ? 1 : 0.4,
-              scoreDisplayMode: 'numeric',
-              title: 'Page implements RAG-optimized JSON-LD schemas',
-              description: 'FAQPage, HowTo, and Article schemas for direct answer extraction.',
-              displayValue: `${jsonLdScripts.length} JSON-LD block(s) detected`,
-              details: {
-                type: 'table',
-                headings: [
-                  { key: 'schema', label: 'Schema' },
-                  { key: 'status', label: 'Status' }
-                ],
-                items: [
-                  { schema: 'FAQPage', status: hasFAQ ? 'Detected' : 'Missing' },
-                  { schema: 'Organization / Product', status: hasOrg ? 'Detected' : 'Missing' }
-                ]
-              }
-            }
-          }
-        ]
-      },
-      'content-chunking': {
-        id: 'content-chunking',
-        title: 'Content Chunking & Semantic Structure',
-        description: 'Evaluates H1-H3 hierarchy and semantic HTML5 partitioning.',
-        score: hasSingleH1 && hasMain ? 1.0 : 0.6,
-        auditRefs: [
-          {
-            id: 'heading-hierarchy',
-            weight: 8,
-            result: {
-              id: 'heading-hierarchy',
-              score: hasSingleH1 ? 1 : 0.5,
-              scoreDisplayMode: 'numeric',
-              title: 'Heading structure (H1-H6) is sequential and contains a single H1',
-              description: 'Sequential hierarchy ensures accurate context in RAG embeddings.',
-              displayValue: `H1 Count: ${h1s.length}, H2 Count: ${h2s.length}`
-            }
-          },
-          {
-            id: 'semantic-containers',
-            weight: 6,
-            result: {
-              id: 'semantic-containers',
-              score: hasMain && hasArticle ? 1 : (hasMain ? 0.7 : 0.3),
-              scoreDisplayMode: 'numeric',
-              title: 'Content uses semantic HTML5 containers (<main>, <article>)',
-              description: 'Semantic markup isolates primary content from page boilerplate.',
-              displayValue: hasMain ? '<main> tag present' : 'No <main> tag found'
-            }
-          }
-        ]
-      }
-    },
-    audits: {}
-  };
-}
 
 // --- 4. Render Report Function ---
 
@@ -268,8 +143,7 @@ function renderReport(report) {
 
   const formatScore = (score) => {
     if (score === null || score === undefined) return 'N/A';
-    const s = score <= 1 ? Math.round(score * 100) : Math.round(score);
-    return s;
+    return score <= 1 ? Math.round(score * 100) : Math.round(score);
   };
 
   const getScoreColor = (score) => {
@@ -311,39 +185,6 @@ function renderReport(report) {
     const scoreVal = formatScore(audit.score);
     const badgeClass = getScoreBadgeClass(audit.score);
 
-    let detailsHtml = '';
-    if (audit.details) {
-      if (audit.details.type === 'table' && audit.details.headings && audit.details.items) {
-        detailsHtml = `
-          <div class="table-responsive">
-            <table class="details-table">
-              <thead>
-                <tr>${audit.details.headings.map((h) => `<th>${h.label}</th>`).join('')}</tr>
-              </thead>
-              <tbody>
-                ${audit.details.items
-                  .map(
-                    (row) =>
-                      `<tr>${audit.details.headings
-                        .map((h) => `<td>${row[h.key] !== undefined ? String(row[h.key]) : '-'}</td>`)
-                        .join('')}</tr>`
-                  )
-                  .join('')}
-              </tbody>
-            </table>
-          </div>
-        `;
-      } else if (audit.details.type === 'list' && audit.details.items) {
-        detailsHtml = `
-          <ul class="details-list">
-            ${audit.details.items
-              .map((item) => `<li>${typeof item === 'string' ? item : item.text}</li>`)
-              .join('')}
-          </ul>
-        `;
-      }
-    }
-
     return `
       <details class="audit-card">
         <summary class="audit-summary">
@@ -355,7 +196,6 @@ function renderReport(report) {
         <div class="audit-body">
           <p class="audit-desc">${audit.description || ''}</p>
           ${audit.explanation ? `<p class="audit-explanation"><strong>Diagnostic:</strong> ${audit.explanation}</p>` : ''}
-          ${detailsHtml}
         </div>
       </details>
     `;

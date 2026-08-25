@@ -1,6 +1,6 @@
 {
   "name": "@drowlink/aeo-linter-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Core engine and audit pipeline for AEO/GEO linter (Lighthouse architecture)",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,7 +26,8 @@
     "prepublishOnly": "npm run build"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "repository": {
     "type": "git",

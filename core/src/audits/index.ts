@@ -1,0 +1,56 @@
+/**
+ * @fileoverview Exportación y registro central de todas las auditorías disponibles
+ */
+
+import { Audit } from './audit.js';
+
+// AI Accessibility
+import { AiRobotsTxtAudit } from './ai-accessibility/ai-robots-txt.js';
+import { AiXRobotsTagAudit } from './ai-accessibility/ai-x-robots-tag.js';
+import { AiBotSitemapAudit } from './ai-accessibility/ai-bot-sitemap.js';
+
+// Structured Data
+import { JsonLdSyntaxValidityAudit } from './structured-data/jsonld-syntax-validity.js';
+import { RagSchemaPresenceAudit } from './structured-data/rag-schema-presence.js';
+import { EntitySameAsLinksAudit } from './structured-data/entity-sameas-links.js';
+
+// Content Chunking
+import { HeadingHierarchyAudit } from './content-chunking/heading-hierarchy.js';
+import { SemanticContainersAudit } from './content-chunking/semantic-containers.js';
+import { ChunkTokenDensityAudit } from './content-chunking/chunk-token-density.js';
+
+// Direct Answer Density
+import { DirectDefinitionAnsweringAudit } from './direct-answer-density/direct-definition-answering.js';
+import { ConciseAnswerWordCountAudit } from './direct-answer-density/concise-answer-wordcount.js';
+import { QuestionHeadingAlignmentAudit } from './direct-answer-density/question-heading-alignment.js';
+
+export {
+  Audit,
+  AiRobotsTxtAudit,
+  AiXRobotsTagAudit,
+  AiBotSitemapAudit,
+  JsonLdSyntaxValidityAudit,
+  RagSchemaPresenceAudit,
+  EntitySameAsLinksAudit,
+  HeadingHierarchyAudit,
+  SemanticContainersAudit,
+  ChunkTokenDensityAudit,
+  DirectDefinitionAnsweringAudit,
+  ConciseAnswerWordCountAudit,
+  QuestionHeadingAlignmentAudit,
+};
+
+export const auditRegistry: Record<string, typeof Audit> = {
+  'ai-robots-txt': AiRobotsTxtAudit,
+  'ai-x-robots-tag': AiXRobotsTagAudit,
+  'ai-bot-sitemap': AiBotSitemapAudit,
+  'jsonld-syntax-validity': JsonLdSyntaxValidityAudit,
+  'rag-schema-presence': RagSchemaPresenceAudit,
+  'entity-sameas-links': EntitySameAsLinksAudit,
+  'heading-hierarchy': HeadingHierarchyAudit,
+  'semantic-containers': SemanticContainersAudit,
+  'chunk-token-density': ChunkTokenDensityAudit,
+  'direct-definition-answering': DirectDefinitionAnsweringAudit,
+  'concise-answer-wordcount': ConciseAnswerWordCountAudit,
+  'question-heading-alignment': QuestionHeadingAlignmentAudit,
+};

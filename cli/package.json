@@ -1,0 +1,21 @@
+{
+  "name": "aeo-linter",
+  "version": "0.1.0",
+  "description": "Command-line interface for Answer Engine Optimization (AEO/GEO) Linter",
+  "bin": {
+    "aeo-linter": "./bin/aeo-linter.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aeo-linter/core": "*",
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "typescript": "^5.4.5"
+  }
+}

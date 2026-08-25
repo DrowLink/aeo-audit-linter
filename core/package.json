@@ -1,0 +1,45 @@
+{
+  "name": "@aeo-linter/core",
+  "version": "0.1.0",
+  "description": "Core engine and audit pipeline for AEO/GEO linter (Lighthouse architecture)",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    },
+    "./config": {
+      "types": "./dist/config/default-config.d.ts",
+      "import": "./dist/config/default-config.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "aeo",
+    "geo",
+    "linter",
+    "lighthouse",
+    "seo",
+    "ai-search",
+    "rag"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0"
+  }
+}

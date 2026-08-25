@@ -22,7 +22,16 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DrowLink/aeo-audit-linter.git",
+    "directory": "core"
   },
   "keywords": [
     "aeo",
@@ -33,7 +42,7 @@
     "ai-search",
     "rag"
   ],
-  "author": "",
+  "author": "DrowLink",
   "license": "MIT",
   "devDependencies": {
     "typescript": "^5.4.5",

@@ -8,10 +8,29 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
+  "files": [
+    "bin",
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DrowLink/aeo-audit-linter.git",
+    "directory": "cli"
+  },
+  "keywords": [
+    "aeo",
+    "geo",
+    "linter",
+    "lighthouse",
+    "cli"
+  ],
+  "author": "DrowLink",
+  "license": "MIT",
   "dependencies": {
-    "@aeo-linter/core": "*",
+    "@aeo-linter/core": "^0.1.0",
     "commander": "^12.0.0"
   },
   "devDependencies": {

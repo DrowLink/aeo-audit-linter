@@ -67,7 +67,7 @@ AEO Audit Linter is built strictly on the **Google Lighthouse Architecture Patte
 
 1. **`core` (`@drowlink/aeo-linter-core`)**: Central engine, TypeScript types, Gatherers, Audits, Aggregator, Assertions, Reporters.
 2. **`cli` (`aeo-linter`)**: CLI binary wrapping `core` with Commander, providing `--html`, `--json`, `-o`, `--fail-under`, `--assert-category`, and `-q/--quiet`.
-3. **`extension`**: Manifest V3 Chrome DevTools extension using `extension/engine.js` with zero Node runtime dependencies for browser evaluation.
+3. **`extension`**: Manifest V3 Chrome DevTools extension using `extension/engine.js` with zero Node runtime dependencies for browser evaluation.ko
    * *Rule*: When adding or updating an audit, ensure `core/src/audits`, `core/src/config/default-config.ts`, and `extension/engine.js` are updated synchronously to maintain 100% feature parity.
 
 ---

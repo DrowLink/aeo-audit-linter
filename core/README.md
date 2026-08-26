@@ -51,19 +51,20 @@ main();
 
 ## 🏛️ Architecture (Lighthouse Pattern)
 
-- **Gatherers (`core/gather`)**: Extract raw typed artifacts (`RobotsTxt`, `JSONLD`, `HttpHeaders`, `HeadingsHierarchy`, `ContentChunks`, `DirectAnswers`).
-- **Audits (`core/audits`)**: Pure deterministic functions that evaluate artifacts and return `{ score, displayValue, details }`.
+- **Gatherers (`core/gather`)**: Extract raw typed artifacts (`RobotsTxt`, `HttpHeaders`, `JSONLD`, `MetaTags`, `HeadingsHierarchy`, `ContentChunks`, `DirectAnswers`, `LlmsTxt`).
+- **Audits (`core/audits`)**: 16 pure deterministic audit functions that evaluate artifacts and return typed `{ score, displayValue, details }`.
 - **Aggregator (`core/runner/aggregator`)**: Calculates weighted category scores and global AEO score (0–100).
+- **Quality Gates (`core/runner/assertions`)**: `evaluateQualityGates` function for CI/CD threshold validation.
 - **Reporters (`core/report`)**: Terminal and interactive SVG gauge HTML dashboards.
 
 ---
 
-## 🎯 Categories
+## 🎯 Categories & Audits (16 Audits)
 
-- `ai-accessibility`: Evaluates permissions for AI bots (`GPTBot`, `PerplexityBot`, `ClaudeBot`, `Google-Extended`, etc.) and `X-Robots-Tag`.
-- `structured-data`: Validates JSON-LD syntax and presence of RAG schemas (`FAQPage`, `HowTo`, `Article`, `sameAs`).
-- `content-chunking`: Verifies H1-H3 hierarchy, semantic tags (`<main>`, `<article>`, `<section>`), and embedding token density.
-- `direct-answer-density`: Measures conciseness (30–60 words) and direct definitions answering key user queries.
+- `ai-accessibility` (25%): AI crawlers (`ai-robots-txt`), headers (`ai-x-robots-tag`), `/llms.txt` standard (`ai-llms-txt`), and Sitemaps (`ai-bot-sitemap`).
+- `structured-data` (25%): RAG schemas (`rag-schema-presence`), JSON-LD syntax (`jsonld-syntax-validity`), Author E-E-A-T (`author-eeat-presence`), and Knowledge Graph (`entity-sameas-links`).
+- `content-chunking` (25%): Headings (`heading-hierarchy`), HTML5 tags (`semantic-containers`), RAG token density (`chunk-token-density`), and tables/lists (`table-list-scannability`).
+- `direct-answer-density` (25%): Definitions (`direct-definition-answering`), 30-60w conciseness (`concise-answer-wordcount`), facts & citations (`fact-citation-density`), and query headings (`question-heading-alignment`).
 
 ---
 

@@ -13,13 +13,13 @@ This document provides a technical walkthrough of how `aeo-linter` is architecte
 
 ---
 
-## 2. The 3-Phase Pipeline
+### 2. The 3-Phase Pipeline + CI/CD Quality Gates
 
 ```
   ┌─────────────────────────────────────────────────────────┐
   │                    1. GATHER PHASE                      │
   │                                                         │
-  │  Target URL ──▶ Driver / Cheerio / CDP                  │
+  │  Target URL ──▶ Driver / Cheerio / Chrome CDP           │
   │                     │                                   │
   │                     ├──▶ URLGatherer                    │
   │                     ├──▶ RobotsTxtGatherer              │
@@ -28,7 +28,8 @@ This document provides a technical walkthrough of how `aeo-linter` is architecte
   │                     ├──▶ MetaTagsGatherer               │
   │                     ├──▶ HeadingsHierarchyGatherer      │
   │                     ├──▶ ContentChunksGatherer          │
-  │                     └──▶ DirectAnswersGatherer          │
+  │                     ├──▶ DirectAnswersGatherer          │
+  │                     └──▶ LlmsTxtGatherer                │
   └─────────────────────────────┬───────────────────────────┘
                                 │
                                 ▼
@@ -37,27 +38,31 @@ This document provides a technical walkthrough of how `aeo-linter` is architecte
   ┌─────────────────────────────┴───────────────────────────┐
   │                    2. AUDIT PHASE                       │
   │                                                         │
-  │  Pure functions consuming `Artifacts`:                  │
+  │  Pure deterministic functions consuming `Artifacts`:    │
   │                                                         │
-  │  [AI Accessibility]                                     │
-  │    ├── ai-robots-txt ───────────▶ AuditResult           │
-  │    ├── ai-x-robots-tag ─────────▶ AuditResult           │
-  │    └── ai-bot-sitemap ──────────▶ AuditResult           │
+  │  [AI Accessibility & Crawling] (25 pts)                 │
+  │    ├── ai-robots-txt (w: 9) ────▶ AuditResult           │
+  │    ├── ai-x-robots-tag (w: 7) ──▶ AuditResult           │
+  │    ├── ai-llms-txt (w: 6) ──────▶ AuditResult           │
+  │    └── ai-bot-sitemap (w: 3) ───▶ AuditResult           │
   │                                                         │
-  │  [Structured Data & RAG]                                │
-  │    ├── jsonld-syntax-validity ──▶ AuditResult           │
-  │    ├── rag-schema-presence ─────▶ AuditResult           │
-  │    └── entity-sameas-links ─────▶ AuditResult           │
+  │  [Structured Data & RAG Schemas] (25 pts)               │
+  │    ├── rag-schema-presence (w: 8) ──▶ AuditResult       │
+  │    ├── jsonld-syntax-validity (w: 7)▶ AuditResult       │
+  │    ├── author-eeat-presence (w: 6) ─▶ AuditResult       │
+  │    └── entity-sameas-links (w: 4) ──▶ AuditResult       │
   │                                                         │
-  │  [Content Chunking]                                     │
-  │    ├── heading-hierarchy ───────▶ AuditResult           │
-  │    ├── semantic-containers ─────▶ AuditResult           │
-  │    └── chunk-token-density ─────▶ AuditResult           │
+  │  [Content Chunking & Semantic Structure] (25 pts)       │
+  │    ├── heading-hierarchy (w: 7) ────▶ AuditResult       │
+  │    ├── semantic-containers (w: 6) ──▶ AuditResult       │
+  │    ├── chunk-token-density (w: 6) ──▶ AuditResult       │
+  │    └── table-list-scannability (w: 6)▶ AuditResult      │
   │                                                         │
-  │  [Direct Answer Density]                                │
-  │    ├── direct-definition-answering ──▶ AuditResult       │
-  │    ├── concise-answer-wordcount ─────▶ AuditResult       │
-  │    └── question-heading-alignment ───▶ AuditResult       │
+  │  [Direct Answer Density & Fact Grounding] (25 pts)      │
+  │    ├── direct-definition-answering (w: 8)▶ AuditResult  │
+  │    ├── concise-answer-wordcount (w: 6) ──▶ AuditResult  │
+  │    ├── fact-citation-density (w: 6) ─────▶ AuditResult  │
+  │    └── question-heading-alignment (w: 5) ▶ AuditResult  │
   └─────────────────────────────┬───────────────────────────┘
                                 │
                                 ▼
@@ -65,12 +70,6 @@ This document provides a technical walkthrough of how `aeo-linter` is architecte
   │                  3. AGGREGATE PHASE                     │
   │                                                         │
   │  Config & Weights:                                      │
-  │    - AI Accessibility (25%)                             │
-  │    - Structured Data (25%)                              │
-  │    - Content Chunking (25%)                             │
-  │    - Direct Answer Density (25%)                        │
-  │                                                         │
-  │  Weighted Score Calculation:                            │
   │    Category Score = Σ(Audit Score * Weight) / Σ(Weight) │
   │    Overall Score  = Σ(Cat Score * Weight) / Σ(Weight)   │
   └─────────────────────────────┬───────────────────────────┘
@@ -78,8 +77,9 @@ This document provides a technical walkthrough of how `aeo-linter` is architecte
                                 ▼
                    `AeoReportResult` Object
                                 │
-            ┌───────────────────┴───────────────────┐
-            ▼                                       ▼
-    Terminal Reporter                       HTML Interactive
-       (ANSI Colors)                        Lighthouse Dashboard
+       ┌────────────────────────┼────────────────────────┐
+       ▼                        ▼                        ▼
+Terminal Reporter        HTML Interactive         CI/CD Quality Gate
+  (ANSI Colors)        Lighthouse Dashboard      `evaluateQualityGates`
+                                                 (`--fail-under 80`)
 ```

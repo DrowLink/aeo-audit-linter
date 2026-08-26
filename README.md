@@ -91,6 +91,9 @@ aeo-linter https://example.com -c ai-accessibility,direct-answer-density
 | `--json` | `-j` | Outputs the complete report in JSON format. |
 | `--output <file>` | `-o` | Specifies output path for the report (`.html` or `.json`). |
 | `--categories <list>`| `-c` | Comma-separated list of categories to audit. |
+| `--fail-under <score>` | — | Fails with exit code `1` if the overall score is below threshold (`0-100`). |
+| `--assert-category <rules...>`| — | Asserts minimum scores per category (e.g. `ai-accessibility=90,structured-data=80`). |
+| `-q, --quiet` | — | Suppresses progress logs for clean CI/CD output. |
 | `--version` | `-V` | Displays the current version. |
 | `--help` | `-h` | Displays help message and option details. |
 
@@ -106,13 +109,13 @@ When using `--html`, `aeo-linter` generates a dashboard inspired by Google Light
 
 ---
 
-## 🤖 CI/CD (GitHub Actions Integration)
+## 🤖 CI/CD Quality Gates (GitHub Actions Integration)
 
-Add automated AEO auditing to your pull requests and deployments.
+Add automated AEO auditing and quality gates to your pull requests and deployments. If a PR degrades AI search readiness below your threshold, the build fails automatically.
 
 Create `.github/workflows/aeo-audit.yml`:
 ```yaml
-name: AEO / GEO Audit Linter
+name: AEO / GEO Quality Gate
 
 on:
   push:
@@ -134,12 +137,16 @@ jobs:
         with:
           node-version: 20
 
-      - name: Run AEO Audit
+      - name: Run AEO Audit with Quality Gates
         run: |
-          npx aeo-linter https://your-production-domain.com --html -o aeo-report.html --json -o aeo-report.json
+          npx aeo-linter https://your-domain.com \
+            --fail-under 80 \
+            --assert-category "ai-accessibility=90,structured-data=75" \
+            --html -o aeo-report.html
 
       - name: Upload HTML Audit Report Artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: aeo-audit-report
           path: aeo-report.html
@@ -149,14 +156,15 @@ jobs:
 
 ## 💻 Programmatic API (Node.js & TypeScript)
 
-You can embed `@aeo-linter/core` into your backend, SaaS, crawler, or custom CLI.
+You can embed `@drowlink/aeo-linter-core` into your backend, SaaS, crawler, or custom CLI.
 
 ```typescript
 import { 
   Runner, 
   HtmlReporter, 
   TerminalReporter, 
-  defaultConfig 
+  defaultConfig,
+  evaluateQualityGates 
 } from '@drowlink/aeo-linter-core';
 
 async function runAeoAudit() {
@@ -173,7 +181,14 @@ async function runAeoAudit() {
   console.log(`AI Accessibility: ${report.categories['ai-accessibility'].score}`);
   console.log(`Structured Data: ${report.categories['structured-data'].score}`);
 
-  // 3. Format reports
+  // 3. Evaluate CI/CD Quality Gates
+  const gateResult = evaluateQualityGates(report, {
+    failUnder: 80,
+    categoryAssertions: { 'ai-accessibility': 90 }
+  });
+  console.log('Quality Gate Passed:', gateResult.passed);
+
+  // 4. Format reports
   const terminalReport = TerminalReporter.generate(report);
   console.log(terminalReport);
 
@@ -198,35 +213,39 @@ Audit any page directly from the Chrome browser inspection panel without leaving
 
 ---
 
-## 🎯 Audits Catalog
+## 🎯 Audits Catalog (16 Audits Across 4 Categories)
 
 ### 1. AI Accessibility & Crawling (Weight: 25%)
 | Audit ID | Description | Weight |
 |---|---|---|
-| `ai-robots-txt` | Verifies access permissions for AI crawlers (`GPTBot`, `PerplexityBot`, `ClaudeBot`, `Google-Extended`, `CCBot`, `Bytespider`). | 10 |
-| `ai-x-robots-tag` | Inspects HTTP response headers to ensure `X-Robots-Tag` does not restrict AI indexing (`noindex`, `noarchive`, `noai`). | 8 |
-| `ai-bot-sitemap` | Validates presence of XML Sitemaps declared in `robots.txt` for efficient deep crawling. | 2 |
+| `ai-robots-txt` | Verifies access permissions for AI crawlers (`GPTBot`, `PerplexityBot`, `ClaudeBot`, `Google-Extended`, `CCBot`, `Bytespider`). | 9 |
+| `ai-x-robots-tag` | Inspects HTTP response headers to ensure `X-Robots-Tag` does not restrict AI indexing (`noindex`, `noarchive`, `noai`). | 7 |
+| `ai-llms-txt` | Validates presence and structure of `/llms.txt` and `/llms-full.txt` standard files for AI agent consumption. | 6 |
+| `ai-bot-sitemap` | Validates presence of XML Sitemaps declared in `robots.txt` for efficient deep crawling. | 3 |
 
 ### 2. Structured Data & RAG Schemas (Weight: 25%)
 | Audit ID | Description | Weight |
 |---|---|---|
-| `jsonld-syntax-validity` | Validates JSON syntax and schema integrity across all JSON-LD blocks. | 8 |
 | `rag-schema-presence` | Checks for high-value schemas for AI synthesis (`FAQPage`, `HowTo`, `Article`, `QAPage`). | 8 |
+| `jsonld-syntax-validity` | Validates JSON syntax and schema integrity across all JSON-LD blocks. | 7 |
+| `author-eeat-presence` | Evaluates verified author credentials (`Person`, `jobTitle`, `sameAs`), publisher info, and visible DOM bylines. | 6 |
 | `entity-sameas-links` | Evaluates `sameAs` entity links (Wikidata, Wikipedia, social profiles) for Knowledge Graph entity resolution. | 4 |
 
 ### 3. Content Chunking & Semantic Structure (Weight: 25%)
 | Audit ID | Description | Weight |
 |---|---|---|
-| `heading-hierarchy` | Enforces single H1 and strict sequential H1 -> H2 -> H3 hierarchy without skipped levels. | 8 |
+| `heading-hierarchy` | Enforces single H1 and strict sequential H1 -> H2 -> H3 hierarchy without skipped levels. | 7 |
 | `semantic-containers` | Checks for semantic HTML5 containers (`<main>`, `<article>`, `<section>`) over generic `<div>` wrappers. | 6 |
 | `chunk-token-density` | Evaluates textual passages for optimal embedding chunk sizes (150 - 500 tokens). | 6 |
+| `table-list-scannability` | Detects structured comparison tables (`<table>`) and bullet/numbered lists (`<ul>`/`<ol>`) for fast LLM extraction. | 6 |
 
-### 4. Direct Answer Density (Weight: 25%)
+### 4. Direct Answer Density & Fact Grounding (Weight: 25%)
 | Audit ID | Description | Weight |
 |---|---|---|
-| `direct-definition-answering` | Detects clear and direct definitions answering key user queries in the opening sentence. | 10 |
+| `direct-definition-answering` | Detects clear and direct definitions answering key user queries in the opening sentence. | 8 |
 | `concise-answer-wordcount` | Verifies that answers follow the ideal 30–60 word range preferred by LLM answer synthesizers. | 6 |
-| `question-heading-alignment` | Evaluates whether headings formulate natural user search queries and questions. | 4 |
+| `fact-citation-density` | Evaluates empirical figures (percentages `%`, metrics) and authoritative citations boosting LLM citation rate. | 6 |
+| `question-heading-alignment` | Evaluates whether headings formulate natural user search queries and questions. | 5 |
 
 ---
 

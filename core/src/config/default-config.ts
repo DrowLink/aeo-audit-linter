@@ -17,9 +17,10 @@ export const defaultConfig: LinterConfig = {
         'Verifies that AI agents and search crawlers (GPTBot, PerplexityBot, ClaudeBot, Google-Extended, etc.) have unrestricted crawling permissions via robots.txt and HTTP headers.',
       weight: 25,
       auditRefs: [
-        { id: 'ai-robots-txt', weight: 10, group: 'crawling' },
-        { id: 'ai-x-robots-tag', weight: 8, group: 'crawling' },
-        { id: 'ai-bot-sitemap', weight: 2, group: 'crawling' },
+        { id: 'ai-robots-txt', weight: 9, group: 'crawling' },
+        { id: 'ai-x-robots-tag', weight: 7, group: 'crawling' },
+        { id: 'ai-bot-sitemap', weight: 3, group: 'crawling' },
+        { id: 'ai-llms-txt', weight: 6, group: 'crawling' },
       ],
     },
     'structured-data': {
@@ -36,12 +37,13 @@ export const defaultConfig: LinterConfig = {
     'content-chunking': {
       title: 'Content Chunking & Semantic Structure',
       description:
-        'Evaluates H1-H3 sequential hierarchy, semantic partitioning (<article>, <section>, <main>), and token density per block for optimal RAG embedding extraction.',
+        'Evaluates H1-H3 sequential hierarchy, semantic partitioning (<article>, <section>, <main>), token density, and structured tables/lists for optimal RAG embedding extraction.',
       weight: 25,
       auditRefs: [
-        { id: 'heading-hierarchy', weight: 8, group: 'structure' },
+        { id: 'heading-hierarchy', weight: 7, group: 'structure' },
         { id: 'semantic-containers', weight: 6, group: 'structure' },
         { id: 'chunk-token-density', weight: 6, group: 'embeddings' },
+        { id: 'table-list-scannability', weight: 6, group: 'structure' },
       ],
     },
     'direct-answer-density': {
@@ -61,6 +63,7 @@ export const defaultConfig: LinterConfig = {
     'ai-robots-txt',
     'ai-x-robots-tag',
     'ai-bot-sitemap',
+    'ai-llms-txt',
     // Structured Data
     'jsonld-syntax-validity',
     'rag-schema-presence',
@@ -69,6 +72,7 @@ export const defaultConfig: LinterConfig = {
     'heading-hierarchy',
     'semantic-containers',
     'chunk-token-density',
+    'table-list-scannability',
     // Direct Answer Density
     'direct-definition-answering',
     'concise-answer-wordcount',

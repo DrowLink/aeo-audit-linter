@@ -13,9 +13,10 @@ export class BrowserAeoEngine {
     const doc = parser.parseFromString(html, 'text/html');
 
     // 1. Gather Phase
-    const [robotsTxtArtifact, httpHeadersArtifact] = await Promise.all([
+    const [robotsTxtArtifact, httpHeadersArtifact, llmsTxtArtifact] = await Promise.all([
       this.gatherRobotsTxt(urlObj),
       this.gatherHttpHeaders(url),
+      this.gatherLlmsTxt(urlObj),
     ]);
 
     const urlArtifact = {
@@ -41,6 +42,7 @@ export class BrowserAeoEngine {
       HeadingsHierarchy: headingsArtifact,
       ContentChunks: contentChunksArtifact,
       DirectAnswers: directAnswersArtifact,
+      LlmsTxt: llmsTxtArtifact,
     };
 
     // 2. Audits Phase
@@ -137,6 +139,50 @@ export class BrowserAeoEngine {
       contentType: 'text/html',
       cacheControl: null,
       contentEncoding: null,
+    };
+  }
+
+  static async gatherLlmsTxt(urlObj) {
+    const llmsUrl = `${urlObj.origin}/llms.txt`;
+    const llmsFullUrl = `${urlObj.origin}/llms-full.txt`;
+    let rawContent = null;
+    let exists = false;
+    let hasFullVersion = false;
+
+    try {
+      const res = await fetch(llmsUrl);
+      if (res.ok) {
+        const text = await res.text();
+        const trimmed = text.trim().toLowerCase();
+        if (!trimmed.startsWith('<!doctype html') && !trimmed.startsWith('<html')) {
+          rawContent = text;
+          exists = true;
+        }
+      }
+    } catch {}
+
+    try {
+      const resFull = await fetch(llmsFullUrl);
+      if (resFull.ok) {
+        const textFull = await resFull.text();
+        const trimmed = textFull.trim().toLowerCase();
+        if (!trimmed.startsWith('<!doctype html') && !trimmed.startsWith('<html')) {
+          hasFullVersion = true;
+        }
+      }
+    } catch {}
+
+    let totalDeclaredLinks = 0;
+    if (rawContent) {
+      const linkMatches = rawContent.match(/^[-*]\s+\[.+\]\(.+\)/gm);
+      if (linkMatches) totalDeclaredLinks = linkMatches.length;
+    }
+
+    return {
+      exists,
+      rawContent,
+      hasFullVersion,
+      totalDeclaredLinks,
     };
   }
 
@@ -375,6 +421,16 @@ export class BrowserAeoEngine {
       displayValue: sitemaps.length > 0 ? `${sitemaps.length} sitemap(s) declared` : 'No sitemap declared in robots.txt',
     };
 
+    // 4. ai-llms-txt
+    const llms = artifacts.LlmsTxt;
+    results['ai-llms-txt'] = {
+      id: 'ai-llms-txt',
+      title: llms.exists ? 'Website provides a standard /llms.txt file for LLM consumption' : 'Missing /llms.txt file for direct LLM and AI agent ingestion',
+      score: llms.exists ? (llms.hasFullVersion ? 1 : 0.9) : 0,
+      description: 'The /llms.txt standard provides clean Markdown summaries and links formatted for LLMs.',
+      displayValue: llms.exists ? `/llms.txt active (${llms.totalDeclaredLinks} link(s) found)` : 'No /llms.txt file found',
+    };
+
     // 4. jsonld-syntax-validity
     const jsonld = artifacts.JSONLD;
     const invalidJ = jsonld.items.filter((i) => !i.isValid);
@@ -486,9 +542,10 @@ export class BrowserAeoEngine {
         description: 'Verifies crawling permissions for AI agents (GPTBot, Perplexity, Claude, Google-Extended).',
         weight: 25,
         auditRefs: [
-          { id: 'ai-robots-txt', weight: 10, result: audits['ai-robots-txt'] },
-          { id: 'ai-x-robots-tag', weight: 8, result: audits['ai-x-robots-tag'] },
-          { id: 'ai-bot-sitemap', weight: 2, result: audits['ai-bot-sitemap'] },
+          { id: 'ai-robots-txt', weight: 9, result: audits['ai-robots-txt'] },
+          { id: 'ai-x-robots-tag', weight: 7, result: audits['ai-x-robots-tag'] },
+          { id: 'ai-bot-sitemap', weight: 3, result: audits['ai-bot-sitemap'] },
+          { id: 'ai-llms-txt', weight: 6, result: audits['ai-llms-txt'] },
         ],
       },
       'structured-data': {

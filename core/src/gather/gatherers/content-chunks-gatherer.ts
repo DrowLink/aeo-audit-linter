@@ -95,6 +95,11 @@ export class ContentChunksGatherer extends Gatherer<'ContentChunks'> {
     const totalEstimatedTokens = chunks.reduce((sum, c) => sum + c.estimatedTokens, 0);
     const averageChunkTokenCount = chunks.length > 0 ? Math.round(totalEstimatedTokens / chunks.length) : 0;
 
+    const totalTablesCount = $('table').length;
+    const structuredTablesCount = $('table').filter((_, el) => $(el).find('thead, th').length > 0).length;
+    const totalListsCount = $('ul, ol').length;
+    const totalListItemsCount = $('li').length;
+
     return {
       chunks,
       totalWordCount,
@@ -104,6 +109,10 @@ export class ContentChunksGatherer extends Gatherer<'ContentChunks'> {
       hasSemanticMain: $('main').length > 0,
       hasSemanticArticle: $('article').length > 0,
       hasSemanticSections: $('section').length > 0,
+      totalTablesCount,
+      totalListsCount,
+      totalListItemsCount,
+      structuredTablesCount,
     };
   }
 }

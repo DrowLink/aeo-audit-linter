@@ -119,6 +119,16 @@ describe('AEO Linter Core Contracts (Lighthouse Architecture)', () => {
         conciseAnswersCount: 0,
         definitionPatternsFound: 0,
       },
+      LlmsTxt: {
+        exists: true,
+        statusCode: 200,
+        rawContent: '# Test',
+        charCount: 6,
+        hasFullVersion: false,
+        fullStatusCode: 404,
+        sections: [],
+        totalDeclaredLinks: 0,
+      },
     };
 
     const result = await MockRobotsAudit.audit(mockArtifacts);

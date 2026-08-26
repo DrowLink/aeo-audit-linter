@@ -55,10 +55,22 @@ describe('Runner and Aggregator Full Pipeline', () => {
       html: mockHtml,
     });
 
-    mockDriver.fetch = async () =>
-      new Response('User-agent: GPTBot\nAllow: /\nSitemap: https://aeo-example.com/sitemap.xml', {
-        status: 200,
-      });
+    mockDriver.fetch = async (url: string) => {
+      if (url.endsWith('/robots.txt')) {
+        return new Response('User-agent: GPTBot\nAllow: /\nSitemap: https://aeo-example.com/sitemap.xml', {
+          status: 200,
+        });
+      }
+      if (url.endsWith('/llms.txt')) {
+        return new Response('# Complete Guide\n> Comprehensive AI Guide\n- [Guide](https://aeo-example.com/guide): Docs', {
+          status: 200,
+        });
+      }
+      if (url.endsWith('/llms-full.txt')) {
+        return new Response('# Full docs', { status: 200 });
+      }
+      return new Response('Not found', { status: 404 });
+    };
 
     const report = await Runner.run('https://aeo-example.com/test', {
       driver: mockDriver,

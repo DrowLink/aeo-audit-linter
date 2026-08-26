@@ -154,6 +154,10 @@ export interface ContentChunksArtifact {
   hasSemanticMain: boolean;
   hasSemanticArticle: boolean;
   hasSemanticSections: boolean;
+  totalTablesCount: number;
+  totalListsCount: number;
+  totalListItemsCount: number;
+  structuredTablesCount: number;
 }
 
 /**
@@ -180,6 +184,30 @@ export interface DirectAnswersArtifact {
 }
 
 /**
+ * Section or link group inside /llms.txt
+ */
+export interface LlmsTxtSection {
+  title?: string;
+  links: Array<{ title: string; url: string; description?: string }>;
+}
+
+/**
+ * /llms.txt and /llms-full.txt parsed artifact
+ */
+export interface LlmsTxtArtifact {
+  exists: boolean;
+  statusCode: number | null;
+  rawContent: string | null;
+  charCount: number;
+  hasFullVersion: boolean;
+  fullStatusCode: number | null;
+  title?: string;
+  summary?: string;
+  sections: LlmsTxtSection[];
+  totalDeclaredLinks: number;
+}
+
+/**
  * Global immutable Artifacts container passed to Audits
  */
 export interface Artifacts {
@@ -191,5 +219,6 @@ export interface Artifacts {
   HeadingsHierarchy: HeadingsHierarchyArtifact;
   ContentChunks: ContentChunksArtifact;
   DirectAnswers: DirectAnswersArtifact;
+  LlmsTxt: LlmsTxtArtifact;
   [customArtifact: string]: unknown;
 }

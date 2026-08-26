@@ -12,3 +12,4 @@ export * from './gatherers/meta-tags-gatherer.js';
 export * from './gatherers/headings-hierarchy-gatherer.js';
 export * from './gatherers/content-chunks-gatherer.js';
 export * from './gatherers/direct-answers-gatherer.js';
+export * from './gatherers/llms-txt-gatherer.js';

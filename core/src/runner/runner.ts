@@ -18,6 +18,7 @@ import { MetaTagsGatherer } from '../gather/gatherers/meta-tags-gatherer.js';
 import { HeadingsHierarchyGatherer } from '../gather/gatherers/headings-hierarchy-gatherer.js';
 import { ContentChunksGatherer } from '../gather/gatherers/content-chunks-gatherer.js';
 import { DirectAnswersGatherer } from '../gather/gatherers/direct-answers-gatherer.js';
+import { LlmsTxtGatherer } from '../gather/gatherers/llms-txt-gatherer.js';
 
 // Audits & Aggregator
 import { auditRegistry } from '../audits/index.js';
@@ -84,6 +85,7 @@ export class Runner {
     const headingsGatherer = new HeadingsHierarchyGatherer();
     const contentGatherer = new ContentChunksGatherer();
     const directAnswersGatherer = new DirectAnswersGatherer();
+    const llmsTxtGatherer = new LlmsTxtGatherer();
 
     const [
       urlArtifact,
@@ -94,6 +96,7 @@ export class Runner {
       headingsArtifact,
       contentArtifact,
       directAnswersArtifact,
+      llmsTxtArtifact,
     ] = await Promise.all([
       urlGatherer.getArtifact(context),
       robotsGatherer.getArtifact(context),
@@ -103,6 +106,7 @@ export class Runner {
       headingsGatherer.getArtifact(context),
       contentGatherer.getArtifact(context),
       directAnswersGatherer.getArtifact(context),
+      llmsTxtGatherer.getArtifact(context),
     ]);
 
     return {
@@ -114,6 +118,7 @@ export class Runner {
       HeadingsHierarchy: headingsArtifact,
       ContentChunks: contentArtifact,
       DirectAnswers: directAnswersArtifact,
+      LlmsTxt: llmsTxtArtifact,
     };
   }
 

@@ -47,14 +47,15 @@ export const defaultConfig: LinterConfig = {
       ],
     },
     'direct-answer-density': {
-      title: 'Direct Answer Density',
+      title: 'Direct Answer Density & Fact Grounding',
       description:
-        'Detects concise, direct definitions and answers to key user questions, optimizing extraction for Answer Engines (Perplexity, SearchGPT, AI Overviews).',
+        'Detects concise direct answers, clear definitions, and verifiable facts/citations that optimize extraction for Answer Engines (Perplexity, SearchGPT, AI Overviews).',
       weight: 25,
       auditRefs: [
-        { id: 'direct-definition-answering', weight: 10, group: 'answers' },
+        { id: 'direct-definition-answering', weight: 8, group: 'answers' },
         { id: 'concise-answer-wordcount', weight: 6, group: 'answers' },
-        { id: 'question-heading-alignment', weight: 4, group: 'answers' },
+        { id: 'question-heading-alignment', weight: 5, group: 'answers' },
+        { id: 'fact-citation-density', weight: 6, group: 'facts' },
       ],
     },
   },
@@ -77,5 +78,6 @@ export const defaultConfig: LinterConfig = {
     'direct-definition-answering',
     'concise-answer-wordcount',
     'question-heading-alignment',
+    'fact-citation-density',
   ],
 };

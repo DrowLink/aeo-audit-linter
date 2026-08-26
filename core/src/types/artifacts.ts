@@ -174,6 +174,18 @@ export interface DirectAnswerPair {
 }
 
 /**
+ * Verifiable facts, statistics, and citations metrics for GEO/AEO
+ */
+export interface FactMetrics {
+  percentagesCount: number;
+  numericalMetricsCount: number;
+  citationPhrasesCount: number;
+  externalSourcesCount: number;
+  externalSourcesUrls: string[];
+  totalFactSignals: number;
+}
+
+/**
  * Direct answer density artifact
  */
 export interface DirectAnswersArtifact {
@@ -181,6 +193,7 @@ export interface DirectAnswersArtifact {
   directAnswerRatio: number;
   conciseAnswersCount: number;
   definitionPatternsFound: number;
+  facts: FactMetrics;
 }
 
 /**

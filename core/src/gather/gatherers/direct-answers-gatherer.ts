@@ -58,11 +58,44 @@ export class DirectAnswersGatherer extends Gatherer<'DirectAnswers'> {
     const conciseAnswersCount = pairs.filter((p) => p.isConcise).length;
     const directAnswerRatio = pairs.length > 0 ? conciseAnswersCount / pairs.length : 0;
 
+    // Fact, Citation, and Numerical Metrics Extraction for GEO
+    $('script, style, noscript, svg, nav, footer, header').remove();
+    const mainText = $('main, article, section, body').text().replace(/\s+/g, ' ');
+
+    const percentageMatches = mainText.match(/\b\d+(?:\.\d+)?\s*(?:%|percent\b|por ciento\b)/gi) || [];
+    const numericalMatches = mainText.match(/(?:[\$€£¥]\s*\d+(?:\.\d+)?|\b\d+(?:\.\d+)?\s*(?:ms|kb|mb|gb|tb|km|kg|k|m|million|billion|millones|tokens|users|usuarios|fps)\b)/gi) || [];
+    const citationMatches = mainText.match(/\b(?:according to|study by|research by|survey by|reported by|published by|data shows|data from|source:|según|estudio de|investigación de|fuente:|datos de|informe de)\b/gi) || [];
+
+    const externalSourcesUrls: string[] = [];
+    let currentHost = '';
+    try {
+      const finalUrl = await context.driver.getUrl();
+      currentHost = new URL(finalUrl).hostname;
+    } catch {}
+
+    $('a[href^="http"]').each((_, a) => {
+      const href = $(a).attr('href') || '';
+      try {
+        const linkUrl = new URL(href);
+        if (linkUrl.hostname && linkUrl.hostname !== currentHost && !externalSourcesUrls.includes(linkUrl.origin)) {
+          externalSourcesUrls.push(linkUrl.origin);
+        }
+      } catch {}
+    });
+
     return {
       pairs,
       directAnswerRatio,
       conciseAnswersCount,
       definitionPatternsFound,
+      facts: {
+        percentagesCount: percentageMatches.length,
+        numericalMetricsCount: numericalMatches.length,
+        citationPhrasesCount: citationMatches.length,
+        externalSourcesCount: externalSourcesUrls.length,
+        externalSourcesUrls,
+        totalFactSignals: percentageMatches.length + numericalMatches.length + citationMatches.length + externalSourcesUrls.length,
+      },
     };
   }
 }

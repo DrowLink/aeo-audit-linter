@@ -25,6 +25,7 @@ import { TableListScannabilityAudit } from './content-chunking/table-list-scanna
 import { DirectDefinitionAnsweringAudit } from './direct-answer-density/direct-definition-answering.js';
 import { ConciseAnswerWordCountAudit } from './direct-answer-density/concise-answer-wordcount.js';
 import { QuestionHeadingAlignmentAudit } from './direct-answer-density/question-heading-alignment.js';
+import { FactCitationDensityAudit } from './direct-answer-density/fact-citation-density.js';
 
 export {
   Audit,
@@ -42,6 +43,7 @@ export {
   DirectDefinitionAnsweringAudit,
   ConciseAnswerWordCountAudit,
   QuestionHeadingAlignmentAudit,
+  FactCitationDensityAudit,
 };
 
 export const auditRegistry: Record<string, typeof Audit> = {
@@ -59,4 +61,5 @@ export const auditRegistry: Record<string, typeof Audit> = {
   'direct-definition-answering': DirectDefinitionAnsweringAudit,
   'concise-answer-wordcount': ConciseAnswerWordCountAudit,
   'question-heading-alignment': QuestionHeadingAlignmentAudit,
+  'fact-citation-density': FactCitationDensityAudit,
 };

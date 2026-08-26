@@ -379,11 +379,32 @@ export class BrowserAeoEngine {
     const definitionPatternsFound = pairs.filter((p) => p.hasDirectDefinition).length;
     const directAnswerRatio = pairs.length > 0 ? conciseAnswersCount / pairs.length : 0;
 
+    const fullText = doc.body?.textContent?.replace(/\s+/g, ' ') || '';
+    const percentageMatches = fullText.match(/\b\d+(?:\.\d+)?\s*(?:%|percent\b|por ciento\b)/gi) || [];
+    const numericalMatches = fullText.match(/(?:[\$€£¥]\s*\d+(?:\.\d+)?|\b\d+(?:\.\d+)?\s*(?:ms|kb|mb|gb|tb|km|kg|k|m|million|billion|millones|tokens|users|usuarios|fps)\b)/gi) || [];
+    const citationMatches = fullText.match(/\b(?:according to|study by|research by|survey by|reported by|published by|data shows|data from|source:|según|estudio de|investigación de|fuente:|datos de|informe de)\b/gi) || [];
+    const externalLinks = Array.from(doc.querySelectorAll('a[href^="http"]'))
+      .map((a) => a.getAttribute('href') || '')
+      .filter((h) => {
+        try {
+          return new URL(h).hostname !== window.location.hostname;
+        } catch {
+          return false;
+        }
+      });
+
     return {
       pairs,
       directAnswerRatio,
       conciseAnswersCount,
       definitionPatternsFound,
+      facts: {
+        percentagesCount: percentageMatches.length,
+        numericalMetricsCount: numericalMatches.length,
+        citationPhrasesCount: citationMatches.length,
+        externalSourcesCount: externalLinks.length,
+        totalFactSignals: percentageMatches.length + numericalMatches.length + citationMatches.length + externalLinks.length,
+      },
     };
   }
 
@@ -558,6 +579,25 @@ export class BrowserAeoEngine {
       displayValue: `${qCount} question-formulated heading(s) found`,
     };
 
+    // 14. fact-citation-density
+    const factSignals = directAns.facts?.totalFactSignals || 0;
+    const extCount = directAns.facts?.externalSourcesCount || 0;
+    const pCount = directAns.facts?.percentagesCount || 0;
+    const numCount = directAns.facts?.numericalMetricsCount || 0;
+    let factScore = 0.5;
+    if (factSignals >= 4 && extCount >= 1) factScore = 1.0;
+    else if (factSignals >= 3) factScore = 0.85;
+    else if (factSignals >= 1) factScore = 0.65;
+    else factScore = 0.3;
+
+    results['fact-citation-density'] = {
+      id: 'fact-citation-density',
+      title: factScore >= 0.85 ? 'Content incorporates concrete statistics, verifiable metrics, and authoritative citations' : 'Content lacks statistics, numerical metrics, or authoritative citations',
+      score: factScore,
+      description: 'Citing verifiable percentages and authoritative sources increases LLM synthesis and citation frequency by up to 40%.',
+      displayValue: `${factSignals} fact signal(s) found (${pCount} %, ${numCount} metrics, ${extCount} sources)`,
+    };
+
     return results;
   }
 
@@ -602,13 +642,14 @@ export class BrowserAeoEngine {
       },
       'direct-answer-density': {
         id: 'direct-answer-density',
-        title: 'Direct Answer Density',
-        description: 'Detects concise, direct answers and definitions answering key search queries.',
+        title: 'Direct Answer Density & Fact Grounding',
+        description: 'Detects concise, direct answers, clear definitions, and verifiable facts/citations.',
         weight: 25,
         auditRefs: [
-          { id: 'direct-definition-answering', weight: 10, result: audits['direct-definition-answering'] },
+          { id: 'direct-definition-answering', weight: 8, result: audits['direct-definition-answering'] },
           { id: 'concise-answer-wordcount', weight: 6, result: audits['concise-answer-wordcount'] },
-          { id: 'question-heading-alignment', weight: 4, result: audits['question-heading-alignment'] },
+          { id: 'question-heading-alignment', weight: 5, result: audits['question-heading-alignment'] },
+          { id: 'fact-citation-density', weight: 6, result: audits['fact-citation-density'] },
         ],
       },
     };

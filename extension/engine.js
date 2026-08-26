@@ -325,9 +325,10 @@ export class BrowserAeoEngine {
       }
     });
 
-    const totalWordCount = chunks.reduce((sum, c) => sum + c.wordCount, 0);
-    const totalEstimatedTokens = chunks.reduce((sum, c) => sum + c.estimatedTokens, 0);
-    const averageChunkTokenCount = chunks.length > 0 ? Math.round(totalEstimatedTokens / chunks.length) : 0;
+    const totalTablesCount = clone.querySelectorAll('table').length;
+    const structuredTablesCount = Array.from(clone.querySelectorAll('table')).filter((t) => t.querySelector('thead, th') !== null).length;
+    const totalListsCount = clone.querySelectorAll('ul, ol').length;
+    const totalListItemsCount = clone.querySelectorAll('li').length;
 
     return {
       chunks,
@@ -338,6 +339,10 @@ export class BrowserAeoEngine {
       hasSemanticMain: hasMain,
       hasSemanticArticle: hasArticle,
       hasSemanticSections: hasSections,
+      totalTablesCount,
+      totalListsCount,
+      totalListItemsCount,
+      structuredTablesCount,
     };
   }
 
@@ -498,7 +503,31 @@ export class BrowserAeoEngine {
       displayValue: `${tokenChunks.length} of ${chunks.chunks.length} chunks optimal (Avg ~${chunks.averageChunkTokenCount} tokens)`,
     };
 
-    // 10. direct-definition-answering
+    // 10. table-list-scannability
+    const totalTables = chunks.totalTablesCount || 0;
+    const totalLists = chunks.totalListsCount || 0;
+    const totalItems = chunks.totalListItemsCount || 0;
+    let scannableScore = 0.5;
+    if (chunks.totalWordCount < 150) {
+      scannableScore = 1;
+    } else if (totalTables > 0 && totalLists > 0) {
+      scannableScore = 1;
+    } else if (totalTables > 0 || totalLists >= 2) {
+      scannableScore = 0.9;
+    } else if (totalLists === 1 && totalItems >= 3) {
+      scannableScore = 0.8;
+    } else if (chunks.totalWordCount > 500) {
+      scannableScore = 0.3;
+    }
+    results['table-list-scannability'] = {
+      id: 'table-list-scannability',
+      title: scannableScore >= 0.8 ? 'Content leverages structured HTML tables and lists for rapid LLM extraction' : 'Content lacks structured tables or lists for quick answer extraction',
+      score: scannableScore,
+      description: 'Generative search engines favor bulleted lists and tables over dense paragraphs.',
+      displayValue: `${totalTables} table(s), ${totalLists} list(s) (${totalItems} items)`,
+    };
+
+    // 11. direct-definition-answering
     const directAns = artifacts.DirectAnswers;
     const defCount = directAns.definitionPatternsFound;
     results['direct-definition-answering'] = {
@@ -509,7 +538,7 @@ export class BrowserAeoEngine {
       displayValue: `${defCount} definition answer(s) found`,
     };
 
-    // 11. concise-answer-wordcount
+    // 12. concise-answer-wordcount
     const conciseCount = directAns.conciseAnswersCount;
     results['concise-answer-wordcount'] = {
       id: 'concise-answer-wordcount',
@@ -519,7 +548,7 @@ export class BrowserAeoEngine {
       displayValue: `${conciseCount} concise answer(s) found`,
     };
 
-    // 12. question-heading-alignment
+    // 13. question-heading-alignment
     const qCount = directAns.pairs.length;
     results['question-heading-alignment'] = {
       id: 'question-heading-alignment',
@@ -562,12 +591,13 @@ export class BrowserAeoEngine {
       'content-chunking': {
         id: 'content-chunking',
         title: 'Content Chunking & Semantic Structure',
-        description: 'Evaluates H1-H3 hierarchy, semantic HTML5 tags, and token density for embeddings.',
+        description: 'Evaluates H1-H3 hierarchy, semantic HTML5 tags, token density, and structured tables/lists.',
         weight: 25,
         auditRefs: [
-          { id: 'heading-hierarchy', weight: 8, result: audits['heading-hierarchy'] },
+          { id: 'heading-hierarchy', weight: 7, result: audits['heading-hierarchy'] },
           { id: 'semantic-containers', weight: 6, result: audits['semantic-containers'] },
           { id: 'chunk-token-density', weight: 6, result: audits['chunk-token-density'] },
+          { id: 'table-list-scannability', weight: 6, result: audits['table-list-scannability'] },
         ],
       },
       'direct-answer-density': {

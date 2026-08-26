@@ -112,6 +112,10 @@ describe('AEO Linter Core Contracts (Lighthouse Architecture)', () => {
         hasSemanticMain: true,
         hasSemanticArticle: false,
         hasSemanticSections: false,
+        totalTablesCount: 0,
+        totalListsCount: 0,
+        totalListItemsCount: 0,
+        structuredTablesCount: 0,
       },
       DirectAnswers: {
         pairs: [],

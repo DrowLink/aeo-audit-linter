@@ -14,6 +14,7 @@ import { AiLlmsTxtAudit } from './ai-accessibility/ai-llms-txt.js';
 import { JsonLdSyntaxValidityAudit } from './structured-data/jsonld-syntax-validity.js';
 import { RagSchemaPresenceAudit } from './structured-data/rag-schema-presence.js';
 import { EntitySameAsLinksAudit } from './structured-data/entity-sameas-links.js';
+import { AuthorEeatPresenceAudit } from './structured-data/author-eeat-presence.js';
 
 // Content Chunking
 import { HeadingHierarchyAudit } from './content-chunking/heading-hierarchy.js';
@@ -36,6 +37,7 @@ export {
   JsonLdSyntaxValidityAudit,
   RagSchemaPresenceAudit,
   EntitySameAsLinksAudit,
+  AuthorEeatPresenceAudit,
   HeadingHierarchyAudit,
   SemanticContainersAudit,
   ChunkTokenDensityAudit,
@@ -54,6 +56,7 @@ export const auditRegistry: Record<string, typeof Audit> = {
   'jsonld-syntax-validity': JsonLdSyntaxValidityAudit,
   'rag-schema-presence': RagSchemaPresenceAudit,
   'entity-sameas-links': EntitySameAsLinksAudit,
+  'author-eeat-presence': AuthorEeatPresenceAudit,
   'heading-hierarchy': HeadingHierarchyAudit,
   'semantic-containers': SemanticContainersAudit,
   'chunk-token-density': ChunkTokenDensityAudit,

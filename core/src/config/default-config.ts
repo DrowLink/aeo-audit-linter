@@ -26,12 +26,13 @@ export const defaultConfig: LinterConfig = {
     'structured-data': {
       title: 'Structured Data & RAG Schemas',
       description:
-        'Audits JSON-LD schemas optimized for RAG (FAQPage, HowTo, Article, QAPage, sameAs) that enrich LLM knowledge graphs with structured entity data.',
+        'Audits JSON-LD schemas optimized for RAG (FAQPage, HowTo, Article, QAPage, sameAs, Author E-E-A-T) that enrich LLM knowledge graphs with structured entity data.',
       weight: 25,
       auditRefs: [
-        { id: 'jsonld-syntax-validity', weight: 8, group: 'schema' },
+        { id: 'jsonld-syntax-validity', weight: 7, group: 'schema' },
         { id: 'rag-schema-presence', weight: 8, group: 'schema' },
         { id: 'entity-sameas-links', weight: 4, group: 'knowledge-graph' },
+        { id: 'author-eeat-presence', weight: 6, group: 'eeat' },
       ],
     },
     'content-chunking': {
@@ -69,6 +70,7 @@ export const defaultConfig: LinterConfig = {
     'jsonld-syntax-validity',
     'rag-schema-presence',
     'entity-sameas-links',
+    'author-eeat-presence',
     // Content Chunking
     'heading-hierarchy',
     'semantic-containers',

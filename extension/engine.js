@@ -198,6 +198,22 @@ export class BrowserAeoEngine {
     let hasProduct = false;
     const sameAsUrls = [];
 
+    const authorEeat = {
+      hasAuthorSchema: false,
+      authorName: undefined,
+      authorType: undefined,
+      authorSameAsUrls: [],
+      hasPublisherSchema: false,
+      publisherName: undefined,
+      hasDatePublished: false,
+      datePublished: undefined,
+      hasDateModified: false,
+      dateModified: undefined,
+      hasDomAuthorByline: false,
+      domAuthorText: undefined,
+      hasDomPublishedDate: false,
+    };
+
     scripts.forEach((script) => {
       const raw = script.textContent || '';
       try {
@@ -211,7 +227,40 @@ export class BrowserAeoEngine {
           if (t.includes('QAPage')) hasQAPage = true;
           if (t.includes('Organization')) hasOrganization = true;
           if (t.includes('Product')) hasProduct = true;
+          if (t.includes('Person')) {
+            authorEeat.hasAuthorSchema = true;
+            authorEeat.authorType = 'Person';
+            if (parsed.name) authorEeat.authorName = parsed.name;
+          }
         });
+
+        if (parsed.author) {
+          authorEeat.hasAuthorSchema = true;
+          if (typeof parsed.author === 'object') {
+            if (parsed.author.name) authorEeat.authorName = parsed.author.name;
+            if (parsed.author['@type']) authorEeat.authorType = parsed.author['@type'];
+            if (parsed.author.sameAs) {
+              if (Array.isArray(parsed.author.sameAs)) authorEeat.authorSameAsUrls.push(...parsed.author.sameAs);
+              else authorEeat.authorSameAsUrls.push(parsed.author.sameAs);
+            }
+          } else if (typeof parsed.author === 'string') {
+            authorEeat.authorName = parsed.author;
+          }
+        }
+
+        if (parsed.publisher) {
+          authorEeat.hasPublisherSchema = true;
+          if (typeof parsed.publisher === 'object' && parsed.publisher.name) authorEeat.publisherName = parsed.publisher.name;
+        }
+
+        if (parsed.datePublished) {
+          authorEeat.hasDatePublished = true;
+          authorEeat.datePublished = String(parsed.datePublished);
+        }
+        if (parsed.dateModified) {
+          authorEeat.hasDateModified = true;
+          authorEeat.dateModified = String(parsed.dateModified);
+        }
 
         if (parsed.sameAs) {
           if (Array.isArray(parsed.sameAs)) sameAsUrls.push(...parsed.sameAs);
@@ -224,6 +273,15 @@ export class BrowserAeoEngine {
       }
     });
 
+    const domByline = doc.querySelector('[rel="author"], [itemprop="author"], .author, .byline, [class*="author-name"]');
+    if (domByline && domByline.textContent?.trim()) {
+      authorEeat.hasDomAuthorByline = true;
+      authorEeat.domAuthorText = domByline.textContent.trim().slice(0, 60);
+    }
+
+    const domTime = doc.querySelector('time[datetime], [itemprop="datePublished"], [class*="publish-date"]');
+    if (domTime) authorEeat.hasDomPublishedDate = true;
+
     return {
       items,
       schemasCountByType,
@@ -235,6 +293,7 @@ export class BrowserAeoEngine {
       hasProduct,
       hasSameAs: sameAsUrls.length > 0,
       sameAsUrls,
+      authorEeat,
     };
   }
 
@@ -489,7 +548,29 @@ export class BrowserAeoEngine {
       displayValue: sameAsCount > 0 ? `${sameAsCount} sameAs link(s) found` : 'No sameAs links found',
     };
 
-    // 7. heading-hierarchy
+    // 7. author-eeat-presence
+    const eeat = jsonld.authorEeat || {};
+    let eeatScore = 0.5;
+    if (eeat.hasAuthorSchema && eeat.authorSameAsUrls?.length > 0 && (eeat.hasPublisherSchema || eeat.hasDomAuthorByline)) {
+      eeatScore = 1.0;
+    } else if (eeat.hasAuthorSchema && (eeat.hasPublisherSchema || eeat.hasDomAuthorByline)) {
+      eeatScore = 0.85;
+    } else if (eeat.hasAuthorSchema || eeat.hasDomAuthorByline) {
+      eeatScore = 0.65;
+    } else if (eeat.hasPublisherSchema || jsonld.hasOrganization) {
+      eeatScore = 0.5;
+    } else {
+      eeatScore = 0.3;
+    }
+    results['author-eeat-presence'] = {
+      id: 'author-eeat-presence',
+      title: eeatScore >= 0.85 ? 'Content features verified author credentials and E-E-A-T structured schema' : 'Missing author credentials, publisher identity, or E-E-A-T metadata',
+      score: eeatScore,
+      description: 'E-E-A-T signals (Author schema, profile links, publisher info) verify authority for Answer Engines.',
+      displayValue: eeat.authorName || eeat.domAuthorText ? `Author: ${eeat.authorName || eeat.domAuthorText}` : (eeat.hasPublisherSchema ? 'Publisher verified' : 'No author credentials detected'),
+    };
+
+    // 8. heading-hierarchy
     const headings = artifacts.HeadingsHierarchy;
     let headingScore = 1;
     if (!headings.hasSingleH1) headingScore -= 0.3;
@@ -620,12 +701,13 @@ export class BrowserAeoEngine {
       'structured-data': {
         id: 'structured-data',
         title: 'Structured Data & RAG Schemas',
-        description: 'Audits JSON-LD schemas optimized for RAG (FAQPage, HowTo, Article, sameAs).',
+        description: 'Audits JSON-LD schemas optimized for RAG (FAQPage, HowTo, Article, sameAs, Author E-E-A-T).',
         weight: 25,
         auditRefs: [
-          { id: 'jsonld-syntax-validity', weight: 8, result: audits['jsonld-syntax-validity'] },
+          { id: 'jsonld-syntax-validity', weight: 7, result: audits['jsonld-syntax-validity'] },
           { id: 'rag-schema-presence', weight: 8, result: audits['rag-schema-presence'] },
           { id: 'entity-sameas-links', weight: 4, result: audits['entity-sameas-links'] },
+          { id: 'author-eeat-presence', weight: 6, result: audits['author-eeat-presence'] },
         ],
       },
       'content-chunking': {

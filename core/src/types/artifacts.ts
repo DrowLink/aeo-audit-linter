@@ -72,6 +72,27 @@ export interface JSONLDItem {
 }
 
 /**
+ * Author and E-E-A-T credentials extracted from JSON-LD schemas and DOM
+ */
+export interface AuthorEeatInfo {
+  hasAuthorSchema: boolean;
+  authorName?: string;
+  authorType?: string;
+  authorSameAsUrls: string[];
+  hasJobTitle: boolean;
+  jobTitle?: string;
+  hasPublisherSchema: boolean;
+  publisherName?: string;
+  hasDatePublished: boolean;
+  datePublished?: string;
+  hasDateModified: boolean;
+  dateModified?: string;
+  hasDomAuthorByline: boolean;
+  domAuthorText?: string;
+  hasDomPublishedDate: boolean;
+}
+
+/**
  * JSON-LD structured data artifact
  */
 export interface JSONLDArtifact {
@@ -85,6 +106,7 @@ export interface JSONLDArtifact {
   hasProduct: boolean;
   hasSameAs: boolean;
   sameAsUrls: string[];
+  authorEeat: AuthorEeatInfo;
 }
 
 /**

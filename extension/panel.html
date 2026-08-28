@@ -6,40 +6,60 @@
   <title>AEO Linter DevTools</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface-hover: #1f242c;
-      --surface-border: #30363d;
-      --text: #f0f6fc;
-      --text-muted: #8b949e;
-      --pass: #0cce6b;
-      --average: #ffa400;
-      --fail: #ff4e42;
-      --accent: #58a6ff;
-      --accent-hover: #388bfd;
-      --btn-secondary: #21262d;
+      --bg: #090d16;
+      --surface: rgba(18, 24, 38, 0.7);
+      --surface-hover: rgba(26, 34, 52, 0.85);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --surface-border-glow: rgba(99, 102, 241, 0.3);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --pass: #10b981;
+      --pass-bg: rgba(16, 185, 129, 0.12);
+      --pass-border: rgba(16, 185, 129, 0.25);
+      
+      --average: #f59e0b;
+      --average-bg: rgba(245, 158, 11, 0.12);
+      --average-border: rgba(245, 158, 11, 0.25);
+      
+      --fail: #f43f5e;
+      --fail-bg: rgba(244, 63, 94, 0.12);
+      --fail-border: rgba(244, 63, 94, 0.25);
+      
+      --accent: #6366f1;
+      --accent-cyan: #38bdf8;
+      --btn-grad: linear-gradient(135deg, #4f46e5 0%, #0284c7 100%);
+      --btn-hover: linear-gradient(135deg, #4338ca 0%, #0369a1 100%);
+      --glow-shadow: 0 8px 24px -6px rgba(79, 70, 229, 0.35);
+      --cozy-radius: 14px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 5% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 95% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%);
+      -webkit-font-smoothing: antialiased;
     }
 
     /* Top Navigation / Action Bar */
     .topbar {
-      background: var(--surface);
+      background: rgba(18, 24, 38, 0.85);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--surface-border);
-      padding: 12px 20px;
+      padding: 12px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -55,62 +75,75 @@
     }
 
     .brand-icon {
-      font-size: 1.25rem;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      object-fit: cover;
     }
 
     .brand-title {
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: -0.2px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .brand-tag {
-      font-size: 0.7rem;
-      text-transform: uppercase;
+      font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      background: rgba(88, 166, 255, 0.15);
-      color: var(--accent);
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid rgba(88, 166, 255, 0.3);
+      text-transform: uppercase;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 2px 8px;
+      border-radius: 999px;
     }
 
     .actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     button {
       font-family: inherit;
       font-size: 0.85rem;
       font-weight: 600;
-      border-radius: 6px;
-      padding: 7px 14px;
+      border-radius: 10px;
+      padding: 8px 16px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       border: 1px solid transparent;
     }
 
     .btn-primary {
-      background: var(--accent);
+      background: var(--btn-grad);
       color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: var(--glow-shadow);
     }
     .btn-primary:hover {
-      background: var(--accent-hover);
+      background: var(--btn-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px -4px rgba(79, 70, 229, 0.5);
     }
 
     .btn-secondary {
-      background: var(--btn-secondary);
+      background: rgba(255, 255, 255, 0.04);
       color: var(--text);
-      border-color: var(--surface-border);
+      border: 1px solid var(--surface-border);
+      backdrop-filter: blur(8px);
     }
     .btn-secondary:hover {
-      background: var(--surface-hover);
-      border-color: #8b949e;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
     }
 
     .btn-export {
@@ -119,107 +152,145 @@
 
     /* Main Container */
     .container {
-      max-width: 1100px;
+      max-width: 1160px;
       width: 100%;
       margin: 0 auto;
-      padding: 24px 20px 60px;
+      padding: 28px 24px 80px;
       flex: 1;
     }
 
     /* Empty / Drop Zone State */
     .dropzone-container {
-      border: 2px dashed var(--surface-border);
-      border-radius: 12px;
+      border: 2px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
       background: var(--surface);
-      padding: 50px 20px;
+      backdrop-filter: blur(16px);
+      padding: 60px 24px;
       text-align: center;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
       margin: 40px auto;
-      max-width: 600px;
+      max-width: 620px;
     }
 
     .dropzone-container:hover,
     .dropzone-container.drag-over {
       border-color: var(--accent);
-      background: rgba(88, 166, 255, 0.05);
+      background: rgba(99, 102, 241, 0.06);
+      transform: translateY(-2px);
     }
 
     .dropzone-icon {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px;
+      background: rgba(99, 102, 241, 0.12);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-cyan);
+      font-size: 1.6rem;
     }
 
     .dropzone-title {
-      font-size: 1.15rem;
+      font-size: 1.25rem;
       font-weight: 700;
-      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+      margin-bottom: 8px;
     }
 
     .dropzone-desc {
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       color: var(--text-muted);
-      margin-bottom: 16px;
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .dropzone-desc code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: var(--accent-cyan);
     }
 
     /* Report View */
     #report-content {
       display: none;
+      animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .report-header {
       background: var(--surface);
+      backdrop-filter: blur(16px);
       border: 1px solid var(--surface-border);
-      border-radius: 12px;
-      padding: 20px 24px;
+      border-radius: var(--cozy-radius);
+      padding: 22px 28px;
       margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 14px;
     }
 
     .report-url {
-      font-size: 1.2rem;
-      font-weight: 700;
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
       word-break: break-all;
+      color: #ffffff;
     }
 
     .report-meta {
       font-size: 0.8rem;
       color: var(--text-muted);
-      margin-top: 4px;
+      margin-top: 5px;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     /* Gauges Grid */
     .gauges-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
     }
 
     .gauge-card {
       background: var(--surface);
+      backdrop-filter: blur(16px);
       border: 1px solid var(--surface-border);
-      border-radius: 12px;
-      padding: 20px 14px;
+      border-radius: var(--cozy-radius);
+      padding: 24px 16px 20px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .gauge-card:hover {
+      border-color: var(--surface-border-glow);
+      transform: translateY(-2px);
     }
 
     .gauge-svg {
-      width: 90px;
-      height: 90px;
+      width: 96px;
+      height: 96px;
       transform: rotate(-90deg);
     }
 
     .gauge-bg {
       fill: none;
-      stroke: #21262d;
+      stroke: rgba(255, 255, 255, 0.06);
       stroke-width: 8;
     }
 
@@ -227,28 +298,32 @@
       fill: none;
       stroke-width: 8;
       stroke-linecap: round;
-      transition: stroke-dashoffset 0.6s ease;
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .gauge-score {
-      font-size: 1.6rem;
+      font-size: 1.75rem;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 800;
-      margin-top: -62px;
-      margin-bottom: 30px;
+      margin-top: -68px;
+      margin-bottom: 34px;
+      letter-spacing: -0.5px;
     }
 
     .gauge-label {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      line-height: 1.3;
     }
 
     /* Category Section */
     .category-section {
       background: var(--surface);
+      backdrop-filter: blur(16px);
       border: 1px solid var(--surface-border);
-      border-radius: 12px;
-      padding: 24px;
+      border-radius: var(--cozy-radius);
+      padding: 24px 28px;
       margin-bottom: 24px;
     }
 
@@ -258,27 +333,32 @@
       align-items: flex-start;
       border-bottom: 1px solid var(--surface-border);
       padding-bottom: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
+      gap: 16px;
     }
 
     .cat-title {
       font-size: 1.15rem;
-      font-weight: 700;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+      color: #ffffff;
     }
 
     .cat-desc {
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       color: var(--text-muted);
       margin-top: 4px;
-      max-width: 750px;
+      max-width: 780px;
+      line-height: 1.5;
     }
 
     .cat-score-pill {
       font-size: 0.95rem;
       font-weight: 700;
-      padding: 4px 12px;
-      border-radius: 16px;
+      padding: 5px 14px;
+      border-radius: 999px;
       font-family: 'JetBrains Mono', monospace;
+      flex-shrink: 0;
     }
 
     /* Audits List */
@@ -290,19 +370,29 @@
 
     .audit-card {
       border: 1px solid var(--surface-border);
-      border-radius: 8px;
-      background: #0d1117;
+      border-radius: 10px;
+      background: rgba(9, 13, 22, 0.6);
       overflow: hidden;
+      transition: border-color 0.15s ease;
+    }
+
+    .audit-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
     }
 
     .audit-summary {
-      padding: 12px 16px;
+      padding: 13px 18px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       list-style: none;
       user-select: none;
+      transition: background 0.15s ease;
+    }
+
+    .audit-summary:hover {
+      background: rgba(255, 255, 255, 0.02);
     }
 
     .audit-summary::-webkit-details-marker { display: none; }
@@ -317,54 +407,64 @@
     .audit-name {
       flex: 1;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
+      color: #e2e8f0;
     }
 
     .audit-display-val {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-left: 10px;
-    }
-
-    .audit-score-pill {
+      font-size: 0.78rem;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 700;
+      color: var(--text-dim);
+      margin-left: 10px;
+      background: rgba(255, 255, 255, 0.04);
       padding: 2px 8px;
       border-radius: 6px;
     }
 
-    .score-pass { background: rgba(12, 206, 107, 0.15); color: var(--pass); }
-    .score-average { background: rgba(255, 164, 0, 0.15); color: var(--average); }
-    .score-fail { background: rgba(255, 78, 66, 0.15); color: var(--fail); }
-    .score-na { background: rgba(139, 148, 158, 0.15); color: var(--text-muted); }
+    .audit-score-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+    }
 
-    .status-dot.score-pass { background: var(--pass); }
-    .status-dot.score-average { background: var(--average); }
-    .status-dot.score-fail { background: var(--fail); }
+    .score-pass { background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass-border); }
+    .score-average { background: var(--average-bg); color: var(--average); border: 1px solid var(--average-border); }
+    .score-fail { background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border); }
+    .score-na { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.2); }
+
+    .status-dot.score-pass { background: var(--pass); box-shadow: 0 0 8px var(--pass); }
+    .status-dot.score-average { background: var(--average); box-shadow: 0 0 8px var(--average); }
+    .status-dot.score-fail { background: var(--fail); box-shadow: 0 0 8px var(--fail); }
     .status-dot.score-na { background: var(--text-muted); }
 
     .audit-body {
-      padding: 14px 18px;
+      padding: 16px 20px;
       border-top: 1px solid var(--surface-border);
-      background: #090d13;
-      font-size: 0.85rem;
+      background: rgba(5, 8, 15, 0.8);
+      font-size: 0.84rem;
+      line-height: 1.55;
     }
 
     .audit-desc {
       color: var(--text-muted);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .audit-explanation {
       margin-bottom: 12px;
-      color: #e6edf3;
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--accent);
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
     }
 
     /* Structured Tables */
     .table-responsive {
       overflow-x: auto;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     .details-table {
@@ -374,27 +474,29 @@
     }
 
     .details-table th {
-      background: #161b22;
+      background: rgba(18, 24, 38, 0.9);
       color: var(--text-muted);
       text-align: left;
-      padding: 6px 10px;
+      padding: 8px 12px;
       border: 1px solid var(--surface-border);
+      font-weight: 600;
     }
 
     .details-table td {
-      padding: 6px 10px;
+      padding: 8px 12px;
       border: 1px solid var(--surface-border);
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
+      font-size: 0.76rem;
+      color: #cbd5e1;
     }
 
     .details-list {
       margin-left: 20px;
-      color: #c9d1d9;
+      color: #cbd5e1;
     }
 
     .details-list li {
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
   </style>
 </head>
@@ -403,7 +505,7 @@
   <!-- Top Action Bar -->
   <header class="topbar">
     <div class="brand">
-      <span class="brand-icon">⚡</span>
+      <img src="icons/icon48.png" alt="AEO Linter" class="brand-icon">
       <span class="brand-title">AEO Linter</span>
       <span class="brand-tag">DevTools</span>
     </div>
@@ -413,13 +515,26 @@
       <input type="file" id="import-file-input" accept=".json" style="display: none;">
       
       <button id="btn-import" class="btn-secondary" title="Import a previously saved JSON report">
-        📥 Import JSON
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Import JSON</span>
       </button>
       <button id="btn-audit-page" class="btn-primary" title="Audit the currently opened tab in Chrome">
-        ⚡ Audit Page
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>Audit Page</span>
       </button>
       <button id="btn-export-json" class="btn-secondary btn-export" title="Export current report as JSON">
-        💾 Export JSON
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+          <polyline points="17 21 17 13 7 13 7 21"></polyline>
+          <polyline points="7 3 7 8 15 8"></polyline>
+        </svg>
+        <span>Export JSON</span>
       </button>
     </div>
   </header>
@@ -429,11 +544,19 @@
     
     <!-- Empty / Dropzone State -->
     <div id="dropzone" class="dropzone-container">
-      <div class="dropzone-icon">📊</div>
+      <div class="dropzone-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+      </div>
       <h2 class="dropzone-title">Audit Active Page or Import Report</h2>
-      <p class="dropzone-desc">Click "Audit Page" to analyze the current tab, or drag and drop an AEO report <code>.json</code> file here to inspect it.</p>
+      <p class="dropzone-desc">Click "Audit Page" to analyze the active tab, or drag & drop an AEO report <code>.json</code> file to inspect it.</p>
       <button id="btn-dropzone-import" class="btn-secondary">
-        📂 Select JSON Report File
+        <span>📂 Select JSON Report File</span>
       </button>
     </div>
 

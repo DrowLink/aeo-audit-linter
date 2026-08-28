@@ -21,5 +21,8 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.62.5"
+  },
+  "dependencies": {
+    "aeo-linter": "^0.1.5"
   }
 }

@@ -12,7 +12,7 @@
 
 **Open-source audit and linting engine for Answer Engine Optimization (AEO/GEO) and RAG readiness.**
 
-[Installation](#-installation) • [CLI Usage](#-cli-usage) • [HTML Reports](#-visual-html-report) • [CI/CD Workflow](#-cicd-github-actions-integration) • [Programmatic API](#-programmatic-api-node--typescript) • [Chrome DevTools](#-chrome-devtools-extension) • [Audits Catalog](#-audits-catalog)
+[Installation](#-installation) • [CLI Usage](#-cli-usage) • [HTML Reports](#-visual-html-report) • [CI/CD Workflow](#-cicd-github-actions-integration) • [Chrome DevTools](#-chrome-devtools-extension) • [Audits Catalog](#-audits-catalog) • [Contributing & Collaborating](./COLLABORATING.md)
 
 </div>
 

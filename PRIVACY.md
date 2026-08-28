@@ -17,7 +17,6 @@
 - **`activeTab` / `scripting`**: Used exclusively to inspect and audit the current webpage when you open the "AEO Audit" panel and initiate an evaluation.
 - **`storage`**: Used strictly for local caching of user audit preferences or report histories within your local browser storage.
 - **`devtools_page`**: Used solely to create and integrate the dedicated audit interface within Chrome Developer Tools.
-- **Host Permissions (`<all_urls>`)**: Required to allow developers to run audits on any URL/page inspected in DevTools.
 
 ---
 

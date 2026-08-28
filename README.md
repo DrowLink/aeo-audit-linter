@@ -3,6 +3,8 @@
 <div align="center">
 
 [![CI](https://github.com/DrowLink/aeo-audit-linter/actions/workflows/ci.yml/badge.svg)](https://github.com/DrowLink/aeo-audit-linter/actions)
+[![NPM Version](https://img.shields.io/npm/v/aeo-linter.svg)](https://www.npmjs.com/package/aeo-linter)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-In%20Review-orange?logo=googlechrome&logoColor=white)](https://github.com/DrowLink/aeo-audit-linter#%EF%B8%8F-chrome-devtools-extension)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/DrowLink/aeo-audit-linter/blob/main/CONTRIBUTING.md)
@@ -13,6 +15,9 @@
 [Installation](#-installation) • [CLI Usage](#-cli-usage) • [HTML Reports](#-visual-html-report) • [CI/CD Workflow](#-cicd-github-actions-integration) • [Programmatic API](#-programmatic-api-node--typescript) • [Chrome DevTools](#-chrome-devtools-extension) • [Audits Catalog](#-audits-catalog)
 
 </div>
+
+> [!NOTE]
+> 🧩 **Chrome Extension Status:** The official **AEO Linter Chrome Extension** has been submitted and is currently **In Review** on the [Chrome Web Store](https://chromewebstore.google.com/). You can already load it unpacked from [`extension/`](./extension) or use the CLI (`npx aeo-linter`).
 
 ---
 

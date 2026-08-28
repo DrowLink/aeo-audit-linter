@@ -1,3 +1,4 @@
+{
   "name": "aeo-linter",
   "version": "0.2.0",
   "description": "Command-line interface for Answer Engine Optimization (AEO/GEO) Linter",

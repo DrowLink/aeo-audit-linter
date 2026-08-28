@@ -3,8 +3,12 @@
 > Command-Line Interface for **Answer Engine Optimization (AEO/GEO)** and **RAG readiness** linting, built on the **Google Lighthouse architecture**.
 
 [![NPM Version](https://img.shields.io/npm/v/aeo-linter.svg)](https://www.npmjs.com/package/aeo-linter)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-In%20Review-orange?logo=googlechrome&logoColor=white)](https://github.com/DrowLink/aeo-audit-linter)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> [!NOTE]
+> 🧩 **Chrome Extension Status:** The companion Chrome DevTools Extension is currently **In Review** on the Chrome Web Store.
 
 Official CLI for [aeo-audit-linter](https://github.com/DrowLink/aeo-audit-linter).
 

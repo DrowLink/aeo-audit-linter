@@ -3,8 +3,12 @@
 > The agnostic core engine and audit pipeline for **Answer Engine Optimization (AEO/GEO)** and **RAG readiness**, built on the **Google Lighthouse architecture**.
 
 [![NPM Version](https://img.shields.io/npm/v/@drowlink/aeo-linter-core.svg)](https://www.npmjs.com/package/@drowlink/aeo-linter-core)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-In%20Review-orange?logo=googlechrome&logoColor=white)](https://github.com/DrowLink/aeo-audit-linter)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> [!NOTE]
+> 🧩 **Chrome Extension Status:** The companion Chrome Extension is currently **In Review** on the Chrome Web Store.
 
 Part of the [aeo-audit-linter](https://github.com/DrowLink/aeo-audit-linter) project.
 

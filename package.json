@@ -1,6 +1,6 @@
 {
   "name": "aeo-linter-monorepo",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Modular Answer Engine Optimization (AEO/GEO) Linter following the Google Lighthouse architecture",
   "workspaces": [
@@ -23,6 +23,6 @@
     "@rollup/rollup-linux-x64-gnu": "^4.62.5"
   },
   "dependencies": {
-    "aeo-linter": "^0.1.5"
+    "aeo-linter": "^0.2.0"
   }
 }

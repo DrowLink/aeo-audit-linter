@@ -3,7 +3,8 @@
 <div align="center">
 
 [![CI](https://github.com/DrowLink/aeo-audit-linter/actions/workflows/ci.yml/badge.svg)](https://github.com/DrowLink/aeo-audit-linter/actions)
-[![NPM Version](https://img.shields.io/npm/v/aeo-linter.svg)](https://www.npmjs.com/package/aeo-linter)
+[![NPM CLI Version](https://img.shields.io/npm/v/aeo-linter.svg?color=cb3837&logo=npm&label=aeo-linter)](https://www.npmjs.com/package/aeo-linter)
+[![NPM Core Version](https://img.shields.io/npm/v/@drowlink/aeo-linter-core.svg?color=cb3837&logo=npm&label=%40drowlink%2Faeo-linter-core)](https://www.npmjs.com/package/@drowlink/aeo-linter-core)
 [![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-In%20Review-orange?logo=googlechrome&logoColor=white)](https://github.com/DrowLink/aeo-audit-linter#%EF%B8%8F-chrome-devtools-extension)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue.svg)](https://www.typescriptlang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,7 +13,7 @@
 
 **Open-source audit and linting engine for Answer Engine Optimization (AEO/GEO) and RAG readiness.**
 
-[Installation](#-installation) • [CLI Usage](#-cli-usage) • [HTML Reports](#-visual-html-report) • [CI/CD Workflow](#-cicd-github-actions-integration) • [Chrome DevTools](#-chrome-devtools-extension) • [Audits Catalog](#-audits-catalog) • [Contributing & Collaborating](./COLLABORATING.md)
+[Packages & Installation](#-packages--installation) • [CLI Usage](#-cli-usage) • [HTML Reports](#-visual-html-report) • [CI/CD Workflow](#-cicd-github-actions-integration) • [Chrome DevTools](#-chrome-devtools-extension) • [Audits Catalog](#-audits-catalog) • [Contributing](./COLLABORATING.md)
 
 </div>
 
@@ -29,9 +30,14 @@ Built strictly according to the modular architecture of [GoogleChrome/lighthouse
 
 ---
 
-## 📦 Installation
+## 📦 Packages & Installation
 
-### 1. Run without installing (Recommended)
+| Package | npm Link | Badges | Description |
+|---|---|---|---|
+| **CLI & Standalone** | [`aeo-linter`](https://www.npmjs.com/package/aeo-linter) | [![npm](https://img.shields.io/npm/v/aeo-linter.svg?color=cb3837&logo=npm)](https://www.npmjs.com/package/aeo-linter) [![downloads](https://img.shields.io/npm/dm/aeo-linter.svg?color=blue)](https://www.npmjs.com/package/aeo-linter) | CLI tool, interactive terminal & HTML report generator |
+| **Core Engine / SDK** | [`@drowlink/aeo-linter-core`](https://www.npmjs.com/package/@drowlink/aeo-linter-core) | [![npm](https://img.shields.io/npm/v/@drowlink/aeo-linter-core.svg?color=cb3837&logo=npm)](https://www.npmjs.com/package/@drowlink/aeo-linter-core) [![downloads](https://img.shields.io/npm/dm/@drowlink/aeo-linter-core.svg?color=blue)](https://www.npmjs.com/package/@drowlink/aeo-linter-core) | Core audit engine, TypeScript types, Gatherers & Reporters |
+
+### 1. Run without installing (Recommended for CLI)
 You can run `aeo-linter` directly using `npx`:
 ```bash
 npx aeo-linter https://example.com
@@ -161,7 +167,7 @@ jobs:
 
 ## 💻 Programmatic API (Node.js & TypeScript)
 
-You can embed `@drowlink/aeo-linter-core` into your backend, SaaS, crawler, or custom CLI.
+You can embed [`@drowlink/aeo-linter-core`](https://www.npmjs.com/package/@drowlink/aeo-linter-core) into your backend, SaaS, crawler, or custom CLI.
 
 ```typescript
 import { 

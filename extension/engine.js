@@ -384,6 +384,10 @@ export class BrowserAeoEngine {
       }
     });
 
+    const totalWordCount = chunks.reduce((sum, c) => sum + c.wordCount, 0);
+    const totalEstimatedTokens = chunks.reduce((sum, c) => sum + c.estimatedTokens, 0);
+    const averageChunkTokenCount = chunks.length > 0 ? Math.round(totalEstimatedTokens / chunks.length) : 0;
+
     const totalTablesCount = clone.querySelectorAll('table').length;
     const structuredTablesCount = Array.from(clone.querySelectorAll('table')).filter((t) => t.querySelector('thead, th') !== null).length;
     const totalListsCount = clone.querySelectorAll('ul, ol').length;

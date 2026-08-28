@@ -6,41 +6,41 @@
   <title>AEO Linter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #ffffff;
-      --surface: #f8fafc;
-      --border: #e2e8f0;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --primary: #1a73e8;
-      --primary-hover: #1557b0;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1e293b;
-        --surface: #0f172a;
-        --border: #334155;
-        --text: #f8fafc;
-        --text-muted: #94a3b8;
-        --primary: #38bdf8;
-        --primary-hover: #0284c7;
-      }
+      --bg: #090d16;
+      --card-bg: rgba(18, 24, 38, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-glow: rgba(99, 102, 241, 0.25);
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --accent-grad: linear-gradient(135deg, #6366f1 0%, #38bdf8 50%, #f43f5e 100%);
+      --accent-indigo: #6366f1;
+      --accent-cyan: #38bdf8;
+      --btn-grad: linear-gradient(135deg, #4f46e5 0%, #0284c7 100%);
+      --btn-hover: linear-gradient(135deg, #4338ca 0%, #0369a1 100%);
+      --glow-shadow: 0 8px 24px -6px rgba(79, 70, 229, 0.35);
+      --cozy-radius: 14px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      width: 340px;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      width: 360px;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
-      padding: 16px;
+      padding: 18px;
       user-select: none;
+      background-image: 
+        radial-gradient(circle at 10% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 90% 100%, rgba(56, 189, 248, 0.08) 0%, transparent 40%);
+      -webkit-font-smoothing: antialiased;
     }
 
+    /* Header */
     .header {
       display: flex;
       align-items: center;
@@ -51,124 +51,232 @@
     .brand-wrap {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .logo-icon {
-      font-size: 1.5rem;
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      object-fit: cover;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     }
 
     .brand-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .version-tag {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 600;
-      color: var(--text-muted);
-      background: var(--surface);
-      padding: 2px 6px;
-      border-radius: 4px;
-      border: 1px solid var(--border);
+      color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      padding: 2px 8px;
+      border-radius: 999px;
     }
 
+    /* Target Box */
     .target-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      margin-bottom: 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--cozy-radius);
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.2s ease;
+    }
+
+    .target-box:hover {
+      border-color: var(--card-border-glow);
+    }
+
+    .target-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
     }
 
     .target-label {
-      font-size: 0.75rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
       font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
+      color: var(--text-dim);
+      letter-spacing: 0.8px;
+    }
+
+    .live-pulse {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.65rem;
+      color: #34d399;
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 8px #34d399;
     }
 
     .target-url {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text);
+      font-size: 0.82rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: #e2e8f0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-top: 2px;
     }
 
+    /* Action Button */
     .btn-generate {
       width: 100%;
-      background: var(--primary);
+      background: var(--btn-grad);
       color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 0.95rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--cozy-radius);
+      padding: 13px 16px;
+      font-size: 0.92rem;
       font-weight: 700;
+      font-family: inherit;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      gap: 10px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--glow-shadow);
     }
 
     .btn-generate:hover {
-      background: var(--primary-hover);
+      background: var(--btn-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px -4px rgba(79, 70, 229, 0.5);
+    }
+
+    .btn-generate:active {
+      transform: translateY(0);
     }
 
     .btn-generate:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
+    /* Categories Box */
     .categories-box {
       margin-top: 16px;
-      border-top: 1px solid var(--border);
-      padding-top: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--cozy-radius);
+      padding: 12px 14px;
+      backdrop-filter: blur(12px);
     }
 
     .section-title {
-      font-size: 0.8rem;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--text-dim);
       margin-bottom: 10px;
+    }
+
+    .categories-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
     .category-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 0.85rem;
-      margin-bottom: 8px;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
       cursor: pointer;
+      padding: 5px 8px;
+      border-radius: 8px;
+      transition: all 0.15s ease;
+    }
+
+    .category-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+    }
+
+    .category-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .cat-icon {
+      font-size: 0.85rem;
+      opacity: 0.85;
     }
 
     .category-item input {
-      accent-color: var(--primary);
-      width: 16px;
-      height: 16px;
+      accent-color: var(--accent-indigo);
+      width: 15px;
+      height: 15px;
       cursor: pointer;
+      border-radius: 4px;
     }
 
+    /* Cozy DevTools Note */
     .devtools-note {
-      margin-top: 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      margin-top: 14px;
+      background: rgba(15, 23, 42, 0.4);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
       padding: 10px 12px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
       line-height: 1.4;
     }
 
     .devtools-note strong {
-      color: var(--text);
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .badge-f12 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #cbd5e1;
+    }
+
+    /* Modal / Alert container */
+    #error-banner {
+      display: none;
+      margin-bottom: 12px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #fca5a5;
+      font-size: 0.78rem;
+      line-height: 1.4;
     }
   </style>
 </head>
@@ -176,44 +284,71 @@
 
   <div class="header">
     <div class="brand-wrap">
-      <span class="logo-icon">⚡</span>
+      <img src="icons/icon48.png" alt="AEO Linter" class="brand-icon">
       <span class="brand-title">AEO Linter</span>
     </div>
-    <span class="version-tag">v0.1.3</span>
+    <span class="version-tag">v0.1.5</span>
   </div>
 
+  <div id="error-banner"></div>
+
   <div class="target-box">
-    <div class="target-label">Auditing Page</div>
-    <div class="target-url" id="target-url-text">Loading current tab...</div>
+    <div class="target-header">
+      <span class="target-label">Target Page</span>
+      <div class="live-pulse">
+        <span class="pulse-dot"></span>
+        <span>READY</span>
+      </div>
+    </div>
+    <div class="target-url" id="target-url-text">Inspecting active tab...</div>
   </div>
 
   <button id="btn-generate-report" class="btn-generate">
-    <span>⚡</span> Generate report
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+    </svg>
+    <span>Run AEO Audit</span>
   </button>
 
   <div class="categories-box">
-    <div class="section-title">Categories</div>
-    <label class="category-item">
-      <input type="checkbox" id="cat-ai" checked>
-      <span>AI Accessibility & Crawling</span>
-    </label>
-    <label class="category-item">
-      <input type="checkbox" id="cat-structured" checked>
-      <span>Structured Data & RAG Schemas</span>
-    </label>
-    <label class="category-item">
-      <input type="checkbox" id="cat-chunking" checked>
-      <span>Content Chunking & Structure</span>
-    </label>
-    <label class="category-item">
-      <input type="checkbox" id="cat-answers" checked>
-      <span>Direct Answer Density</span>
-    </label>
+    <div class="section-title">Audit Vectors (25% each)</div>
+    <div class="categories-grid">
+      <label class="category-item">
+        <div class="category-left">
+          <span class="cat-icon">🤖</span>
+          <span>AI Crawling & Accessibility</span>
+        </div>
+        <input type="checkbox" id="cat-ai" checked>
+      </label>
+      <label class="category-item">
+        <div class="category-left">
+          <span class="cat-icon">🏷️</span>
+          <span>Structured Data & Schemas</span>
+        </div>
+        <input type="checkbox" id="cat-structured" checked>
+      </label>
+      <label class="category-item">
+        <div class="category-left">
+          <span class="cat-icon">📑</span>
+          <span>Content Chunking & Structure</span>
+        </div>
+        <input type="checkbox" id="cat-chunking" checked>
+      </label>
+      <label class="category-item">
+        <div class="category-left">
+          <span class="cat-icon">🎯</span>
+          <span>Direct Answer Density</span>
+        </div>
+        <input type="checkbox" id="cat-answers" checked>
+      </label>
+    </div>
   </div>
 
   <div class="devtools-note">
-    <strong>Chrome DevTools:</strong> You can also run AEO Linter via the DevTools panel or import saved JSON reports.<br>
-    <em>Shortcut to open DevTools: F12</em>
+    <span>💡</span>
+    <div>
+      Deep diagnostics available in DevTools panel (<span class="badge-f12">F12</span> ➔ <strong>AEO Audit</strong>).
+    </div>
   </div>
 
   <script type="module" src="popup.js"></script>

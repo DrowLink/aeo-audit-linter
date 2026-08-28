@@ -58,9 +58,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       window.close();
     } catch (err) {
-      alert(`AEO Audit error: ${err.message}`);
+      const errorBanner = document.getElementById('error-banner');
+      if (errorBanner) {
+        errorBanner.textContent = `Audit error: ${err.message}`;
+        errorBanner.style.display = 'block';
+      }
       btnGenerate.disabled = false;
-      btnGenerate.innerHTML = '<span>⚡</span> Generate report';
+      btnGenerate.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+        </svg>
+        <span>Run AEO Audit</span>
+      `;
     }
   });
 });

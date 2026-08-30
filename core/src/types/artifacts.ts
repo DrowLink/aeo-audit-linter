@@ -142,9 +142,78 @@ export interface HeadingsHierarchyArtifact {
   h1Count: number;
   h2Count: number;
   h3Count: number;
+  h4Count: number;
+  h5Count: number;
+  h6Count: number;
   hasSingleH1: boolean;
   isHierarchySequential: boolean;
   skippedLevels: Array<{ from: number; to: number; text: string }>;
+}
+
+/**
+ * Image item extracted from DOM
+ */
+export interface ImageItem {
+  src: string;
+  alt: string | null;
+  hasAlt: boolean;
+  isDecorative: boolean;
+  width?: number;
+  height?: number;
+  loading?: string;
+}
+
+/**
+ * Images artifact for accessibility, crawler indexing, and asset analysis
+ */
+export interface ImagesArtifact {
+  images: ImageItem[];
+  totalImages: number;
+  missingAltCount: number;
+  passedAltCount: number;
+}
+
+/**
+ * Anchor link item extracted from DOM
+ */
+export interface LinkItem {
+  href: string;
+  text: string;
+  isInternal: boolean;
+  isExternal: boolean;
+  hasText: boolean;
+  isCrawlable: boolean;
+  rel?: string;
+  target?: string;
+}
+
+/**
+ * Links artifact for crawlability, internal/external distribution, and anchor quality
+ */
+export interface LinksArtifact {
+  links: LinkItem[];
+  totalLinks: number;
+  internalLinksCount: number;
+  externalLinksCount: number;
+  missingTextCount: number;
+  nonCrawlableCount: number;
+}
+
+/**
+ * Keyword occurrence & density item
+ */
+export interface KeywordItem {
+  word: string;
+  count: number;
+  densityPercent: number;
+}
+
+/**
+ * Keywords & content density artifact for SEO and semantic scannability
+ */
+export interface KeywordsArtifact {
+  topKeywords: KeywordItem[];
+  totalWords: number;
 }
 
 /**
@@ -252,6 +321,9 @@ export interface Artifacts {
   JSONLD: JSONLDArtifact;
   MetaTags: MetaTagsArtifact;
   HeadingsHierarchy: HeadingsHierarchyArtifact;
+  Images: ImagesArtifact;
+  Links: LinksArtifact;
+  Keywords: KeywordsArtifact;
   ContentChunks: ContentChunksArtifact;
   DirectAnswers: DirectAnswersArtifact;
   LlmsTxt: LlmsTxtArtifact;

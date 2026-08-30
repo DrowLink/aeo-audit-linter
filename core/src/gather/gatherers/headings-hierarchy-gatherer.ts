@@ -17,6 +17,9 @@ export class HeadingsHierarchyGatherer extends Gatherer<'HeadingsHierarchy'> {
     let h1Count = 0;
     let h2Count = 0;
     let h3Count = 0;
+    let h4Count = 0;
+    let h5Count = 0;
+    let h6Count = 0;
 
     const headingElements = $('h1, h2, h3, h4, h5, h6');
     headingElements.each((index, el) => {
@@ -28,6 +31,9 @@ export class HeadingsHierarchyGatherer extends Gatherer<'HeadingsHierarchy'> {
       if (level === 1) h1Count++;
       if (level === 2) h2Count++;
       if (level === 3) h3Count++;
+      if (level === 4) h4Count++;
+      if (level === 5) h5Count++;
+      if (level === 6) h6Count++;
 
       headings.push({
         level,
@@ -60,6 +66,9 @@ export class HeadingsHierarchyGatherer extends Gatherer<'HeadingsHierarchy'> {
       h1Count,
       h2Count,
       h3Count,
+      h4Count,
+      h5Count,
+      h6Count,
       hasSingleH1: h1Count === 1,
       isHierarchySequential,
       skippedLevels,

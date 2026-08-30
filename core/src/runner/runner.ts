@@ -16,6 +16,9 @@ import { HttpHeadersGatherer } from '../gather/gatherers/http-headers-gatherer.j
 import { JSONLDGatherer } from '../gather/gatherers/jsonld-gatherer.js';
 import { MetaTagsGatherer } from '../gather/gatherers/meta-tags-gatherer.js';
 import { HeadingsHierarchyGatherer } from '../gather/gatherers/headings-hierarchy-gatherer.js';
+import { ImagesGatherer } from '../gather/gatherers/images-gatherer.js';
+import { LinksGatherer } from '../gather/gatherers/links-gatherer.js';
+import { KeywordsGatherer } from '../gather/gatherers/keywords-gatherer.js';
 import { ContentChunksGatherer } from '../gather/gatherers/content-chunks-gatherer.js';
 import { DirectAnswersGatherer } from '../gather/gatherers/direct-answers-gatherer.js';
 import { LlmsTxtGatherer } from '../gather/gatherers/llms-txt-gatherer.js';
@@ -83,6 +86,9 @@ export class Runner {
     const jsonldGatherer = new JSONLDGatherer();
     const metaGatherer = new MetaTagsGatherer();
     const headingsGatherer = new HeadingsHierarchyGatherer();
+    const imagesGatherer = new ImagesGatherer();
+    const linksGatherer = new LinksGatherer();
+    const keywordsGatherer = new KeywordsGatherer();
     const contentGatherer = new ContentChunksGatherer();
     const directAnswersGatherer = new DirectAnswersGatherer();
     const llmsTxtGatherer = new LlmsTxtGatherer();
@@ -94,6 +100,9 @@ export class Runner {
       jsonldArtifact,
       metaArtifact,
       headingsArtifact,
+      imagesArtifact,
+      linksArtifact,
+      keywordsArtifact,
       contentArtifact,
       directAnswersArtifact,
       llmsTxtArtifact,
@@ -104,6 +113,9 @@ export class Runner {
       jsonldGatherer.getArtifact(context),
       metaGatherer.getArtifact(context),
       headingsGatherer.getArtifact(context),
+      imagesGatherer.getArtifact(context),
+      linksGatherer.getArtifact(context),
+      keywordsGatherer.getArtifact(context),
       contentGatherer.getArtifact(context),
       directAnswersGatherer.getArtifact(context),
       llmsTxtGatherer.getArtifact(context),
@@ -116,6 +128,9 @@ export class Runner {
       JSONLD: jsonldArtifact,
       MetaTags: metaArtifact,
       HeadingsHierarchy: headingsArtifact,
+      Images: imagesArtifact,
+      Links: linksArtifact,
+      Keywords: keywordsArtifact,
       ContentChunks: contentArtifact,
       DirectAnswers: directAnswersArtifact,
       LlmsTxt: llmsTxtArtifact,

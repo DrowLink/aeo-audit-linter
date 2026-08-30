@@ -1,16 +1,17 @@
 /**
- * @fileoverview Controller for AEO Linter Chrome DevTools Panel.
+ * @fileoverview Controller for AEO & SEO Linter Chrome DevTools Panel.
  * Supports:
- * 1. Importing previously saved AEO JSON audit reports (file picker & drag-and-drop).
+ * 1. Importing previously saved JSON audit reports.
  * 2. Auditing active tab directly within DevTools using the full in-browser engine.
  * 3. Exporting audit reports.
- * 4. Rendering interactive Lighthouse-style score gauges and structured tables.
+ * 4. Rendering interactive tabbed views: Summary, Audits, Content & SERP Preview, Headings, Images, AI & GEO.
  */
 
 import { BrowserAeoEngine } from './engine.js';
 
 // State
 let currentReport = null;
+let activeTab = 'summary';
 
 // DOM Elements
 const importFileInput = document.getElementById('import-file-input');
@@ -20,6 +21,8 @@ const btnAuditPage = document.getElementById('btn-audit-page');
 const btnExportJson = document.getElementById('btn-export-json');
 const dropzone = document.getElementById('dropzone');
 const reportContent = document.getElementById('report-content');
+const summaryBarContainer = document.getElementById('summary-bar-container');
+const tabsNavContainer = document.getElementById('tabs-nav-container');
 
 // --- 1. Import Handlers ---
 
@@ -96,7 +99,7 @@ btnExportJson?.addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-// --- 3. Audit Active Page Handler (Using BrowserAeoEngine) ---
+// --- 3. Audit Active Page Handler ---
 
 btnAuditPage?.addEventListener('click', () => {
   if (typeof chrome === 'undefined' || !chrome.devtools || !chrome.devtools.inspectedWindow) {
@@ -116,7 +119,7 @@ btnAuditPage?.addEventListener('click', () => {
     })()`,
     async (pageData, isException) => {
       btnAuditPage.disabled = false;
-      btnAuditPage.textContent = '⚡ Audit Page';
+      btnAuditPage.textContent = '⚡ Audit Active Tab';
 
       if (isException || !pageData) {
         alert('Error inspecting active tab.');
@@ -141,17 +144,77 @@ function renderReport(report) {
   reportContent.style.display = 'block';
   btnExportJson.style.display = 'inline-flex';
 
+  const artifacts = report.artifacts || {};
+  const headings = artifacts.HeadingsHierarchy || { h1Count: 0, h2Count: 0, h3Count: 0, h4Count: 0, h5Count: 0, h6Count: 0 };
+  const images = artifacts.Images || { totalImages: 0, missingAltCount: 0, passedAltCount: 0 };
+  const links = artifacts.Links || { totalLinks: 0, internalLinksCount: 0, externalLinksCount: 0 };
+  const keywords = artifacts.Keywords || { topKeywords: [] };
+
+  const isIndexable = report.audits?.['seo-indexability']?.score === 1;
+
+  let originUrl = '';
+  try {
+    originUrl = new URL(report.url).origin;
+  } catch {}
+
+  // 1. Render Top Summary Metrics Bar
+  summaryBarContainer.innerHTML = `
+    <div class="summary-metrics-bar">
+      <div class="headings-grid">
+        <div class="metric-badge"><span class="lbl">H1</span><span class="val">${headings.h1Count || 0}</span></div>
+        <div class="metric-badge"><span class="lbl">H2</span><span class="val">${headings.h2Count || 0}</span></div>
+        <div class="metric-badge"><span class="lbl">H3</span><span class="val">${headings.h3Count || 0}</span></div>
+        <div class="metric-badge"><span class="lbl">H4</span><span class="val">${headings.h4Count || 0}</span></div>
+        <div class="metric-badge"><span class="lbl">H5</span><span class="val">${headings.h5Count || 0}</span></div>
+        <div class="metric-badge"><span class="lbl">H6</span><span class="val">${headings.h6Count || 0}</span></div>
+        <div class="metric-badge" style="margin-left: 8px;"><span class="lbl">IMAGES</span><span class="val">${images.totalImages || 0}</span></div>
+        <div class="metric-badge"><span class="lbl">LINKS</span><span class="val">${links.totalLinks || 0}</span></div>
+      </div>
+      <div class="status-badges">
+        <div class="quick-links">
+          ${originUrl ? `<a href="${originUrl}/robots.txt" target="_blank">Robots.txt</a>` : ''}
+          ${originUrl ? `<a href="${originUrl}/sitemap.xml" target="_blank">Sitemap.xml</a>` : ''}
+          ${originUrl ? `<a href="${originUrl}/llms.txt" target="_blank">llms.txt</a>` : ''}
+        </div>
+        <span class="${isIndexable ? 'badge-indexable' : 'badge-noindex'}">${isIndexable ? 'INDEXABLE' : 'NOINDEX'}</span>
+      </div>
+    </div>
+  `;
+
+  // 2. Render Tabs Navigation
+  tabsNavContainer.innerHTML = `
+    <div class="tabs-nav">
+      <button class="tab-btn ${activeTab === 'summary' ? 'active' : ''}" data-tab="summary">Summary</button>
+      <button class="tab-btn ${activeTab === 'audits' ? 'active' : ''}" data-tab="audits">All Audits</button>
+      <button class="tab-btn ${activeTab === 'content' ? 'active' : ''}" data-tab="content">Content & SERP</button>
+      <button class="tab-btn ${activeTab === 'headings' ? 'active' : ''}" data-tab="headings">Headings</button>
+      <button class="tab-btn ${activeTab === 'images' ? 'active' : ''}" data-tab="images">Images (${images.totalImages || 0})</button>
+      <button class="tab-btn ${activeTab === 'ai' ? 'active' : ''}" data-tab="ai">AI & GEO</button>
+    </div>
+  `;
+
+  // Bind tab switches
+  tabsNavContainer.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeTab = btn.getAttribute('data-tab');
+      tabsNavContainer.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-pane').forEach((p) => p.classList.remove('active'));
+      document.getElementById(`tab-pane-${activeTab}`)?.classList.add('active');
+    });
+  });
+
   const formatScore = (score) => {
     if (score === null || score === undefined) return 'N/A';
     return score <= 1 ? Math.round(score * 100) : Math.round(score);
   };
 
   const getScoreColor = (score) => {
-    if (score === null || score === undefined) return '#8b949e';
+    if (score === null || score === undefined) return '#94a3b8';
     const s = score <= 1 ? score * 100 : score;
-    if (s >= 90) return '#0cce6b';
-    if (s >= 50) return '#ffa400';
-    return '#ff4e42';
+    if (s >= 90) return '#10b981';
+    if (s >= 50) return '#f59e0b';
+    return '#f43f5e';
   };
 
   const getScoreBadgeClass = (score) => {
@@ -162,14 +225,14 @@ function renderReport(report) {
     return 'score-fail';
   };
 
-  const renderGauge = (score, title) => {
+  const renderGauge = (score, title, isMain = false) => {
     const s = formatScore(score);
     const color = getScoreColor(score);
     const numScore = typeof s === 'number' ? s : 0;
     const strokeDashoffset = 283 - (283 * numScore) / 100;
 
     return `
-      <div class="gauge-card">
+      <div class="gauge-card ${isMain ? 'gauge-main' : ''}">
         <svg class="gauge-svg" viewBox="0 0 100 100">
           <circle class="gauge-bg" cx="50" cy="50" r="45" />
           <circle class="gauge-fill" cx="50" cy="50" r="45"
@@ -224,25 +287,112 @@ function renderReport(report) {
   };
 
   const categories = report.categories || {};
-  const dateStr = report.fetchTime ? new Date(report.fetchTime).toLocaleString('en-US') : 'N/A';
+  const metaTags = artifacts.MetaTags || {};
+  const pageTitle = metaTags.title || 'Page Title';
+  const pageDesc = metaTags.description || 'Meta description snippet for search previews.';
 
   reportContent.innerHTML = `
-    <div class="report-header">
-      <div>
-        <h1 class="report-url">${report.url || 'Audit Report'}</h1>
-        <div class="report-meta">Audited on ${dateStr} &bull; Engine v${report.aeoVersion || '0.1.3'}</div>
+    <!-- Tab 1: Summary -->
+    <div class="tab-pane ${activeTab === 'summary' ? 'active' : ''}" id="tab-pane-summary">
+      <div class="gauges-grid">
+        ${renderGauge(report.overallScore, 'Overall Score', true)}
+        ${Object.values(categories)
+          .map((cat) => renderGauge(cat.score, cat.title))
+          .join('')}
+      </div>
+
+      <div class="serp-card">
+        <div class="serp-header">Google SERP Snippet Preview</div>
+        <div class="serp-box">
+          <div class="serp-url">${report.url}</div>
+          <a class="serp-title" href="${report.url}" target="_blank">${pageTitle}</a>
+          <div class="serp-desc">${pageDesc}</div>
+        </div>
       </div>
     </div>
 
-    <div class="gauges-grid">
-      ${renderGauge(report.overallScore, 'Overall AEO')}
+    <!-- Tab 2: Audits -->
+    <div class="tab-pane ${activeTab === 'audits' ? 'active' : ''}" id="tab-pane-audits">
       ${Object.values(categories)
-        .map((cat) => renderGauge(cat.score, cat.title))
+        .map((cat) => renderCategory(cat))
         .join('')}
     </div>
 
-    ${Object.values(categories)
-      .map((cat) => renderCategory(cat))
-      .join('')}
+    <!-- Tab 3: Content & SERP -->
+    <div class="tab-pane ${activeTab === 'content' ? 'active' : ''}" id="tab-pane-content">
+      <div class="serp-card">
+        <div class="serp-header">Google SERP Preview</div>
+        <div class="serp-box">
+          <div class="serp-url">${report.url}</div>
+          <a class="serp-title" href="${report.url}" target="_blank">${pageTitle}</a>
+          <div class="serp-desc">${pageDesc}</div>
+        </div>
+      </div>
+
+      <div class="keywords-section">
+        <div class="keywords-header">Top Keywords & Frequency Density</div>
+        ${(keywords.topKeywords || []).map((kw) => `
+          <div class="keyword-row">
+            <span class="kw-word">${kw.word}</span>
+            <span class="kw-count">${kw.count}x</span>
+            <span class="kw-density">${kw.densityPercent}%</span>
+            <div class="kw-bar-bg">
+              <div class="kw-bar-fill" style="width: ${Math.min(100, kw.densityPercent * 15)}%;"></div>
+            </div>
+          </div>
+        `).join('') || '<p style="color: var(--text-muted); font-size: 0.85rem;">No keyword data extracted.</p>'}
+      </div>
+    </div>
+
+    <!-- Tab 4: Headings -->
+    <div class="tab-pane ${activeTab === 'headings' ? 'active' : ''}" id="tab-pane-headings">
+      <div class="category-section">
+        <div class="cat-head">
+          <h2 class="cat-title">Headings Structure (H1 - H6)</h2>
+          <span class="cat-score-pill ${headings.hasSingleH1 && headings.isHierarchySequential ? 'score-pass' : 'score-average'}">
+            ${headings.hasSingleH1 ? '1 Main H1' : `${headings.h1Count} H1 Tags`}
+          </span>
+        </div>
+        <div class="audits-list">
+          ${(headings.headings || []).map((h) => `
+            <div class="audit-card" style="padding: 8px 14px; display: flex; align-items: center; gap: 10px;">
+              <span class="brand-tag">H${h.level}</span>
+              <span style="font-size: 0.85rem; font-weight: 600;">${h.text || '(empty heading)'}</span>
+            </div>
+          `).join('') || '<p style="color: var(--text-muted); font-size: 0.85rem;">No headings detected.</p>'}
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Images -->
+    <div class="tab-pane ${activeTab === 'images' ? 'active' : ''}" id="tab-pane-images">
+      <div class="category-section">
+        <div class="cat-head">
+          <h2 class="cat-title">Image Assets & Alt Attributes</h2>
+          <span class="cat-score-pill ${images.missingAltCount === 0 ? 'score-pass' : 'score-fail'}">
+            ${images.missingAltCount} Missing Alt
+          </span>
+        </div>
+        <div class="audits-list">
+          ${(images.images || []).slice(0, 30).map((img) => `
+            <div class="audit-card" style="padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+              <span style="font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;">
+                ${img.src || '(inline)'}
+              </span>
+              <span class="audit-score-pill ${img.hasAlt ? 'score-pass' : 'score-fail'}">
+                ${img.hasAlt ? 'Alt: ' + (img.alt || 'empty/decorative') : 'No Alt'}
+              </span>
+            </div>
+          `).join('') || '<p style="color: var(--text-muted); font-size: 0.85rem;">No images found on page.</p>'}
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 6: AI & GEO -->
+    <div class="tab-pane ${activeTab === 'ai' ? 'active' : ''}" id="tab-pane-ai">
+      ${categories['ai-accessibility'] ? renderCategory(categories['ai-accessibility']) : ''}
+      ${categories['structured-data'] ? renderCategory(categories['structured-data']) : ''}
+      ${categories['direct-answer-density'] ? renderCategory(categories['direct-answer-density']) : ''}
+    </div>
   `;
 }

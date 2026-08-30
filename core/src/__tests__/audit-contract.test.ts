@@ -28,9 +28,10 @@ class MockRobotsAudit extends Audit {
   }
 }
 
-describe('AEO Linter Core Contracts (Lighthouse Architecture)', () => {
-  it('defines the 4 key AEO categories with weights summing to 100', () => {
+describe('AEO & SEO Linter Core Contracts (Lighthouse Architecture)', () => {
+  it('defines the 5 key SEO & AEO categories with weights summing to 100', () => {
     const categories = Object.keys(defaultConfig.categories);
+    expect(categories).toContain('seo-fundamentals');
     expect(categories).toContain('ai-accessibility');
     expect(categories).toContain('structured-data');
     expect(categories).toContain('content-chunking');
@@ -109,9 +110,30 @@ describe('AEO Linter Core Contracts (Lighthouse Architecture)', () => {
         h1Count: 1,
         h2Count: 0,
         h3Count: 0,
+        h4Count: 0,
+        h5Count: 0,
+        h6Count: 0,
         hasSingleH1: true,
         isHierarchySequential: true,
         skippedLevels: [],
+      },
+      Images: {
+        images: [],
+        totalImages: 0,
+        missingAltCount: 0,
+        passedAltCount: 0,
+      },
+      Links: {
+        links: [],
+        totalLinks: 0,
+        internalLinksCount: 0,
+        externalLinksCount: 0,
+        missingTextCount: 0,
+        nonCrawlableCount: 0,
+      },
+      Keywords: {
+        topKeywords: [],
+        totalWords: 0,
       },
       ContentChunks: {
         chunks: [],

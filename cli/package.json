@@ -1,7 +1,7 @@
 {
   "name": "aeo-linter",
   "version": "0.2.0",
-  "description": "Command-line interface for Answer Engine Optimization (AEO/GEO) Linter",
+  "description": "Command-line interface for SEO, GEO (Generative Engine Optimization) & AEO Linter",
   "bin": {
     "aeo-linter": "./bin/aeo-linter.js"
   },

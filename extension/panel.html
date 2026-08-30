@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AEO Linter DevTools</title>
+  <title>AEO & SEO Linter DevTools</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090d16;
-      --surface: rgba(18, 24, 38, 0.7);
-      --surface-hover: rgba(26, 34, 52, 0.85);
+      --bg: #080c14;
+      --surface: rgba(16, 22, 36, 0.75);
+      --surface-card: #121a2c;
+      --surface-hover: rgba(26, 36, 58, 0.85);
       --surface-border: rgba(255, 255, 255, 0.08);
       --surface-border-glow: rgba(99, 102, 241, 0.3);
       --text: #f1f5f9;
@@ -49,17 +50,17 @@
       display: flex;
       flex-direction: column;
       background-image: 
-        radial-gradient(circle at 5% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 5% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
         radial-gradient(circle at 95% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 40%);
       -webkit-font-smoothing: antialiased;
     }
 
     /* Top Navigation / Action Bar */
     .topbar {
-      background: rgba(18, 24, 38, 0.85);
+      background: rgba(14, 20, 32, 0.88);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--surface-border);
-      padding: 12px 24px;
+      padding: 10px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -75,9 +76,9 @@
     }
 
     .brand-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 6px;
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
       object-fit: cover;
     }
 
@@ -95,7 +96,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
       text-transform: uppercase;
-      background: rgba(56, 189, 248, 0.1);
+      background: rgba(56, 189, 248, 0.12);
       color: var(--accent-cyan);
       border: 1px solid rgba(56, 189, 248, 0.25);
       padding: 2px 8px;
@@ -105,19 +106,19 @@
     .actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     button {
       font-family: inherit;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      border-radius: 10px;
-      padding: 8px 16px;
+      border-radius: 8px;
+      padding: 7px 14px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       border: 1px solid transparent;
     }
@@ -131,31 +132,145 @@
     .btn-primary:hover {
       background: var(--btn-hover);
       transform: translateY(-1px);
-      box-shadow: 0 10px 24px -4px rgba(79, 70, 229, 0.5);
     }
 
     .btn-secondary {
       background: rgba(255, 255, 255, 0.04);
       color: var(--text);
       border: 1px solid var(--surface-border);
-      backdrop-filter: blur(8px);
     }
     .btn-secondary:hover {
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.18);
-      transform: translateY(-1px);
     }
 
-    .btn-export {
-      display: none;
+    .btn-export { display: none; }
+
+    /* Summary Bar */
+    .summary-metrics-bar {
+      background: rgba(18, 26, 42, 0.95);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .headings-grid {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .metric-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      min-width: 38px;
+    }
+    .metric-badge .lbl {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .metric-badge .val {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .status-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-indexable {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: var(--pass);
+      font-weight: 700;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .badge-noindex {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: var(--fail);
+      font-weight: 700;
+      font-size: 0.72rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .quick-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.78rem;
+    }
+    .quick-links a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(56, 189, 248, 0.4);
+    }
+    .quick-links a:hover {
+      color: #ffffff;
+      border-bottom-style: solid;
+    }
+
+    /* Tab Navigation */
+    .tabs-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      padding: 0 20px;
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 10px 14px;
+      border-radius: 0;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .tab-btn.active {
+      color: var(--accent-cyan);
+      border-bottom-color: var(--accent-cyan);
+      background: rgba(56, 189, 248, 0.05);
     }
 
     /* Main Container */
     .container {
-      max-width: 1160px;
+      max-width: 1180px;
       width: 100%;
       margin: 0 auto;
-      padding: 28px 24px 80px;
+      padding: 24px 20px 80px;
       flex: 1;
     }
 
@@ -165,12 +280,12 @@
       border-radius: 18px;
       background: var(--surface);
       backdrop-filter: blur(16px);
-      padding: 60px 24px;
+      padding: 50px 24px;
       text-align: center;
       cursor: pointer;
       transition: all 0.25s ease;
       margin: 40px auto;
-      max-width: 620px;
+      max-width: 600px;
     }
 
     .dropzone-container:hover,
@@ -181,39 +296,30 @@
     }
 
     .dropzone-icon {
-      width: 56px;
-      height: 56px;
-      margin: 0 auto 16px;
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 14px;
       background: rgba(99, 102, 241, 0.12);
       border: 1px solid rgba(99, 102, 241, 0.25);
-      border-radius: 14px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--accent-cyan);
-      font-size: 1.6rem;
+      font-size: 1.5rem;
     }
 
     .dropzone-title {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      letter-spacing: -0.3px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .dropzone-desc {
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       color: var(--text-muted);
-      margin-bottom: 22px;
+      margin-bottom: 20px;
       line-height: 1.5;
-    }
-
-    .dropzone-desc code {
-      font-family: 'JetBrains Mono', monospace;
-      background: rgba(255, 255, 255, 0.08);
-      padding: 2px 6px;
-      border-radius: 6px;
-      color: var(--accent-cyan);
     }
 
     /* Report View */
@@ -227,345 +333,235 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .report-header {
-      background: var(--surface);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--cozy-radius);
-      padding: 22px 28px;
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 14px;
+    .tab-pane {
+      display: none;
     }
-
-    .report-url {
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      word-break: break-all;
-      color: #ffffff;
-    }
-
-    .report-meta {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      margin-top: 5px;
-      font-family: 'JetBrains Mono', monospace;
+    .tab-pane.active {
+      display: block;
     }
 
     /* Gauges Grid */
     .gauges-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 16px;
-      margin-bottom: 30px;
+      gap: 14px;
+      margin-bottom: 24px;
     }
 
     .gauge-card {
       background: var(--surface);
-      backdrop-filter: blur(16px);
       border: 1px solid var(--surface-border);
       border-radius: var(--cozy-radius);
-      padding: 24px 16px 20px;
-      text-align: center;
+      padding: 18px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: all 0.2s ease;
+      text-align: center;
+      transition: transform 0.2s ease, border-color 0.2s ease;
     }
-
     .gauge-card:hover {
-      border-color: var(--surface-border-glow);
       transform: translateY(-2px);
+      border-color: var(--surface-border-glow);
+    }
+    .gauge-card.gauge-main {
+      border: 2px solid var(--accent);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(18, 24, 38, 0.85) 100%);
     }
 
     .gauge-svg {
-      width: 96px;
-      height: 96px;
+      width: 84px;
+      height: 84px;
       transform: rotate(-90deg);
     }
-
-    .gauge-bg {
-      fill: none;
-      stroke: rgba(255, 255, 255, 0.06);
-      stroke-width: 8;
-    }
-
-    .gauge-fill {
-      fill: none;
-      stroke-width: 8;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
+    .gauge-bg { fill: none; stroke: rgba(255, 255, 255, 0.08); stroke-width: 8; }
+    .gauge-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
     .gauge-score {
-      font-size: 1.75rem;
-      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
       font-weight: 800;
-      margin-top: -68px;
-      margin-bottom: 34px;
-      letter-spacing: -0.5px;
+      margin-top: -58px;
+      margin-bottom: 26px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .gauge-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
     }
 
-    .gauge-label {
-      font-size: 0.84rem;
+    /* SERP Preview Card */
+    .serp-card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--cozy-radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .serp-header {
+      font-size: 0.72rem;
       font-weight: 700;
-      color: #e2e8f0;
-      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    .serp-box {
+      background: #ffffff;
+      color: #202124;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: Arial, sans-serif;
+    }
+    .serp-url { font-size: 0.78rem; color: #202124; margin-bottom: 3px; }
+    .serp-title { font-size: 1.15rem; color: #1a0dab; text-decoration: none; display: block; margin-bottom: 4px; line-height: 1.3; }
+    .serp-desc { font-size: 0.84rem; color: #4d5156; line-height: 1.4; }
+
+    /* Top Keywords Table */
+    .keywords-section {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--cozy-radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .keywords-header {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+    }
+    .keyword-row {
+      display: grid;
+      grid-template-columns: 140px 60px 70px 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.82rem;
+    }
+    .kw-word { font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    .kw-count { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+    .kw-density { color: var(--accent-cyan); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .kw-bar-bg {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 999px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .kw-bar-fill {
+      background: linear-gradient(90deg, #38bdf8 0%, #6366f1 100%);
+      height: 100%;
+      border-radius: 999px;
     }
 
     /* Category Section */
     .category-section {
       background: var(--surface);
-      backdrop-filter: blur(16px);
       border: 1px solid var(--surface-border);
       border-radius: var(--cozy-radius);
-      padding: 24px 28px;
-      margin-bottom: 24px;
+      padding: 20px;
+      margin-bottom: 20px;
     }
-
     .cat-head {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       border-bottom: 1px solid var(--surface-border);
-      padding-bottom: 16px;
-      margin-bottom: 18px;
-      gap: 16px;
+      padding-bottom: 14px;
+      margin-bottom: 14px;
     }
-
-    .cat-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      letter-spacing: -0.2px;
-      color: #ffffff;
-    }
-
-    .cat-desc {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-      max-width: 780px;
-      line-height: 1.5;
-    }
-
+    .cat-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 2px; }
+    .cat-desc { font-size: 0.82rem; color: var(--text-muted); }
     .cat-score-pill {
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       font-weight: 700;
-      padding: 5px 14px;
-      border-radius: 999px;
+      padding: 3px 10px;
+      border-radius: 20px;
       font-family: 'JetBrains Mono', monospace;
-      flex-shrink: 0;
     }
 
-    /* Audits List */
-    .audits-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
+    /* Audits */
+    .audits-list { display: flex; flex-direction: column; gap: 8px; }
     .audit-card {
       border: 1px solid var(--surface-border);
-      border-radius: 10px;
-      background: rgba(9, 13, 22, 0.6);
+      border-radius: 8px;
+      background: var(--surface-card);
       overflow: hidden;
-      transition: border-color 0.15s ease;
     }
-
-    .audit-card:hover {
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
     .audit-summary {
-      padding: 13px 18px;
+      padding: 10px 14px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
       list-style: none;
       user-select: none;
-      transition: background 0.15s ease;
     }
-
-    .audit-summary:hover {
-      background: rgba(255, 255, 255, 0.02);
-    }
-
     .audit-summary::-webkit-details-marker { display: none; }
-
     .status-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       flex-shrink: 0;
     }
+    .status-dot.score-pass { background: var(--pass); box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+    .status-dot.score-average { background: var(--average); box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+    .status-dot.score-fail { background: var(--fail); box-shadow: 0 0 8px rgba(244, 63, 94, 0.4); }
 
-    .audit-name {
-      flex: 1;
-      font-weight: 600;
-      font-size: 0.88rem;
-      color: #e2e8f0;
-    }
+    .audit-name { font-size: 0.86rem; font-weight: 600; flex: 1; }
+    .audit-display-val { font-size: 0.78rem; color: var(--text-muted); margin-right: 8px; font-family: 'JetBrains Mono', monospace; }
+    .audit-score-pill { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
 
-    .audit-display-val {
-      font-size: 0.78rem;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--text-dim);
-      margin-left: 10px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    .audit-score-pill {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
-      font-weight: 700;
-      padding: 3px 9px;
-      border-radius: 6px;
-    }
-
-    .score-pass { background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass-border); }
-    .score-average { background: var(--average-bg); color: var(--average); border: 1px solid var(--average-border); }
-    .score-fail { background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border); }
-    .score-na { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); border: 1px solid rgba(148, 163, 184, 0.2); }
-
-    .status-dot.score-pass { background: var(--pass); box-shadow: 0 0 8px var(--pass); }
-    .status-dot.score-average { background: var(--average); box-shadow: 0 0 8px var(--average); }
-    .status-dot.score-fail { background: var(--fail); box-shadow: 0 0 8px var(--fail); }
-    .status-dot.score-na { background: var(--text-muted); }
+    .score-pass { background: rgba(16, 185, 129, 0.15); color: var(--pass); }
+    .score-average { background: rgba(245, 158, 11, 0.15); color: var(--average); }
+    .score-fail { background: rgba(244, 63, 94, 0.15); color: var(--fail); }
+    .score-na { background: rgba(148, 163, 184, 0.15); color: var(--text-muted); }
 
     .audit-body {
-      padding: 16px 20px;
+      padding: 12px 16px;
       border-top: 1px solid var(--surface-border);
-      background: rgba(5, 8, 15, 0.8);
-      font-size: 0.84rem;
-      line-height: 1.55;
+      background: rgba(9, 13, 22, 0.7);
+      font-size: 0.82rem;
     }
-
-    .audit-desc {
-      color: var(--text-muted);
-      margin-bottom: 12px;
-    }
-
-    .audit-explanation {
-      margin-bottom: 12px;
-      color: #f1f5f9;
-      background: rgba(255, 255, 255, 0.03);
-      border-left: 3px solid var(--accent);
-      padding: 8px 12px;
-      border-radius: 0 6px 6px 0;
-    }
-
-    /* Structured Tables */
-    .table-responsive {
-      overflow-x: auto;
-      margin-top: 12px;
-    }
-
-    .details-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-    }
-
-    .details-table th {
-      background: rgba(18, 24, 38, 0.9);
-      color: var(--text-muted);
-      text-align: left;
-      padding: 8px 12px;
-      border: 1px solid var(--surface-border);
-      font-weight: 600;
-    }
-
-    .details-table td {
-      padding: 8px 12px;
-      border: 1px solid var(--surface-border);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.76rem;
-      color: #cbd5e1;
-    }
-
-    .details-list {
-      margin-left: 20px;
-      color: #cbd5e1;
-    }
-
-    .details-list li {
-      margin-bottom: 5px;
-    }
+    .audit-desc { color: var(--text-muted); margin-bottom: 8px; }
+    .audit-explanation { color: #cbd5e1; }
   </style>
 </head>
 <body>
-
-  <!-- Top Action Bar -->
-  <header class="topbar">
+  <!-- Top Bar -->
+  <div class="topbar">
     <div class="brand">
-      <img src="icons/icon48.png" alt="AEO Linter" class="brand-icon">
-      <span class="brand-title">AEO Linter</span>
-      <span class="brand-tag">DevTools</span>
+      <img src="icons/icon48.png" class="brand-icon" alt="Logo">
+      <span class="brand-title">AEO & SEO Linter</span>
+      <span class="brand-tag">SEO + GEO + AEO</span>
     </div>
-
     <div class="actions">
-      <!-- Hidden File Input for JSON Import -->
       <input type="file" id="import-file-input" accept=".json" style="display: none;">
-      
-      <button id="btn-import" class="btn-secondary" title="Import a previously saved JSON report">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-        <span>Import JSON</span>
-      </button>
-      <button id="btn-audit-page" class="btn-primary" title="Audit the currently opened tab in Chrome">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-        </svg>
-        <span>Audit Page</span>
-      </button>
-      <button id="btn-export-json" class="btn-secondary btn-export" title="Export current report as JSON">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-          <polyline points="17 21 17 13 7 13 7 21"></polyline>
-          <polyline points="7 3 7 8 15 8"></polyline>
-        </svg>
-        <span>Export JSON</span>
-      </button>
+      <button class="btn-secondary" id="btn-import">📂 Import JSON</button>
+      <button class="btn-secondary btn-export" id="btn-export-json">💾 Export JSON</button>
+      <button class="btn-primary" id="btn-audit-page">⚡ Audit Active Tab</button>
     </div>
-  </header>
+  </div>
 
-  <!-- Content Area -->
-  <main class="container">
-    
-    <!-- Empty / Dropzone State -->
-    <div id="dropzone" class="dropzone-container">
-      <div class="dropzone-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="16" y1="13" x2="8" y2="13"></line>
-          <line x1="16" y1="17" x2="8" y2="17"></line>
-          <polyline points="10 9 9 9 8 9"></polyline>
-        </svg>
-      </div>
-      <h2 class="dropzone-title">Audit Active Page or Import Report</h2>
-      <p class="dropzone-desc">Click "Audit Page" to analyze the active tab, or drag & drop an AEO report <code>.json</code> file to inspect it.</p>
-      <button id="btn-dropzone-import" class="btn-secondary">
-        <span>📂 Select JSON Report File</span>
-      </button>
+  <!-- Summary Metrics Bar (rendered after audit) -->
+  <div id="summary-bar-container"></div>
+
+  <!-- Tabs Navigation (rendered after audit) -->
+  <div id="tabs-nav-container"></div>
+
+  <div class="container">
+    <!-- Dropzone Empty State -->
+    <div class="dropzone-container" id="dropzone">
+      <div class="dropzone-icon">⚡</div>
+      <h2 class="dropzone-title">Unified SEO, GEO & AEO Audit</h2>
+      <p class="dropzone-desc">Click <strong>Audit Active Tab</strong> or drop an AEO/SEO <code>.json</code> report here to inspect technical SEO, RAG structured schemas, and direct answer density.</p>
+      <button class="btn-primary" id="btn-dropzone-import">Select JSON File</button>
     </div>
 
-    <!-- Report Dashboard View -->
-    <div id="report-content">
-      <!-- Dynamically filled by panel.js -->
-    </div>
-
-  </main>
+    <!-- Report View Container -->
+    <div id="report-content"></div>
+  </div>
 
   <script type="module" src="panel.js"></script>
 </body>

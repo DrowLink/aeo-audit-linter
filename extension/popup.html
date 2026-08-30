@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AEO Linter</title>
+  <title>AEO & SEO Linter</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -63,7 +63,7 @@
     }
 
     .brand-title {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: 800;
       letter-spacing: -0.3px;
       background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
@@ -177,7 +177,7 @@
 
     /* Categories Box */
     .categories-box {
-      margin-top: 16px;
+      margin-top: 14px;
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--cozy-radius);
@@ -191,24 +191,24 @@
       text-transform: uppercase;
       letter-spacing: 0.7px;
       color: var(--text-dim);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .categories-grid {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .category-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       cursor: pointer;
-      padding: 5px 8px;
-      border-radius: 8px;
+      padding: 4px 6px;
+      border-radius: 6px;
       transition: all 0.15s ease;
     }
 
@@ -220,20 +220,18 @@
     .category-left {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
     }
 
     .cat-icon {
-      font-size: 0.85rem;
-      opacity: 0.85;
+      font-size: 0.82rem;
     }
 
     .category-item input {
       accent-color: var(--accent-indigo);
-      width: 15px;
-      height: 15px;
+      width: 14px;
+      height: 14px;
       cursor: pointer;
-      border-radius: 4px;
     }
 
     /* Cozy DevTools Note */
@@ -284,17 +282,17 @@
 
   <div class="header">
     <div class="brand-wrap">
-      <img src="icons/icon48.png" alt="AEO Linter" class="brand-icon">
-      <span class="brand-title">AEO Linter</span>
+      <img src="icons/icon48.png" alt="AEO & SEO Linter" class="brand-icon">
+      <span class="brand-title">AEO & SEO Linter</span>
     </div>
-    <span class="version-tag">v0.2.0</span>
+    <span class="version-tag">SEO+GEO+AEO</span>
   </div>
 
   <div id="error-banner"></div>
 
   <div class="target-box">
     <div class="target-header">
-      <span class="target-label">Target Page</span>
+      <span class="target-label">Active Page</span>
       <div class="live-pulse">
         <span class="pulse-dot"></span>
         <span>READY</span>
@@ -307,12 +305,19 @@
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
     </svg>
-    <span>Run AEO Audit</span>
+    <span>Run SEO, GEO & AEO Audit</span>
   </button>
 
   <div class="categories-box">
-    <div class="section-title">Audit Vectors (25% each)</div>
+    <div class="section-title">Audit Vectors (20% each)</div>
     <div class="categories-grid">
+      <label class="category-item">
+        <div class="category-left">
+          <span class="cat-icon">🔍</span>
+          <span>Core SEO & Indexability</span>
+        </div>
+        <input type="checkbox" id="cat-seo" checked>
+      </label>
       <label class="category-item">
         <div class="category-left">
           <span class="cat-icon">🤖</span>
@@ -347,7 +352,7 @@
   <div class="devtools-note">
     <span>💡</span>
     <div>
-      Deep diagnostics available in DevTools panel (<span class="badge-f12">F12</span> ➔ <strong>AEO Audit</strong>).
+      Full report & SERP preview in DevTools (<span class="badge-f12">F12</span> ➔ <strong>AEO Audit</strong>).
     </div>
   </div>
 

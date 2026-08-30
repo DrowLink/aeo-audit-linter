@@ -30,22 +30,26 @@ AEO Linter strictly follows the **Google Lighthouse Architecture**:
                │
                ▼
 [ Gatherers (Pure Artifact Extraction) ]
-   ├── URLGatherer
-   ├── RobotsTxtGatherer
-   ├── HttpHeadersGatherer
-   ├── JSONLDGatherer
-   ├── MetaTagsGatherer
-   ├── HeadingsHierarchyGatherer
-   ├── ContentChunksGatherer
-   ├── DirectAnswersGatherer
-   └── LlmsTxtGatherer
+   ├── MetaTagsGatherer (Title, Desc, Canonical, Viewport, OpenGraph, Twitter)
+   ├── ImagesGatherer (Alt attributes, dimensions)
+   ├── LinksGatherer (Internal/External distribution, crawlability)
+   ├── KeywordsGatherer (Frequencies, density percentages)
+   ├── URLGatherer (URL resolution)
+   ├── RobotsTxtGatherer (AI bots status & directives)
+   ├── HttpHeadersGatherer (X-Robots-Tag, status codes)
+   ├── JSONLDGatherer (Schemas, E-E-A-T credentials)
+   ├── HeadingsHierarchyGatherer (H1-H6 sequential checks)
+   ├── ContentChunksGatherer (Semantic chunks & token estimation)
+   ├── DirectAnswersGatherer (Direct answers & verifiable facts)
+   └── LlmsTxtGatherer (/llms.txt standard files)
                │
                ▼
 [ Pure Audits (Deterministic Scoring: 0 - 1) ]
-   ├── AI Accessibility (25%)
-   ├── Structured Data & Schemas (25%)
-   ├── Content Chunking & Density (25%)
-   └── Direct Answer Answering (25%)
+   ├── Core SEO & Indexability (20%)
+   ├── AI Accessibility & Crawling (20%)
+   ├── Structured Data & Schemas (20%)
+   ├── Content Chunking & Structure (20%)
+   └── Direct Answer Density & Fact Grounding (20%)
                │
                ▼
 [ Aggregator (Overall AEO Score: 0 - 100) ]

@@ -77,7 +77,8 @@ describe('Runner and Aggregator Full Pipeline', () => {
     });
 
     expect(report.url).toBe('https://aeo-example.com/test');
-    expect(report.overallScore).toBeGreaterThan(70);
+    expect(report.overallScore).toBeGreaterThan(60);
+    expect(report.categories['seo-fundamentals']?.score).toBeGreaterThan(0.5);
     expect(report.categories['ai-accessibility']?.score).toBe(1);
     expect(report.categories['structured-data']?.score).toBeGreaterThanOrEqual(0.8);
     expect(report.categories['content-chunking']?.score).toBeGreaterThanOrEqual(0.8);
@@ -85,8 +86,9 @@ describe('Runner and Aggregator Full Pipeline', () => {
 
     // Verify report generators
     const terminalOutput = TerminalReporter.generate(report);
-    expect(terminalOutput).toContain('Overall AEO Score');
+    expect(terminalOutput).toContain('Overall AEO & SEO Score');
     expect(terminalOutput).toContain('AI Accessibility & Crawling');
+    expect(terminalOutput).toContain('Core SEO & Indexability');
 
     const htmlOutput = HtmlReporter.generate(report);
     expect(htmlOutput).toContain('<!DOCTYPE html>');

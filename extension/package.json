@@ -1,7 +1,7 @@
 {
   "name": "@aeo-linter/extension",
   "version": "0.2.0",
-  "description": "Chrome DevTools Panel Extension for AEO Linter (Manifest V3)",
+  "description": "Chrome DevTools Panel Extension for SEO, GEO & AEO Linter (Manifest V3)",
   "private": true,
   "scripts": {
     "build": "echo 'Building extension...'"

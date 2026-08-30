@@ -1,7 +1,7 @@
 {
   "name": "@drowlink/aeo-linter-core",
   "version": "0.2.0",
-  "description": "Core engine and audit pipeline for AEO/GEO linter (Lighthouse architecture)",
+  "description": "Core engine and audit pipeline for SEO, GEO and AEO linter (Lighthouse architecture)",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",

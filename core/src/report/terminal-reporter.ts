@@ -24,7 +24,7 @@ export class TerminalReporter {
     lines.push(`  Engine:     v${report.aeoVersion}`);
     lines.push('\x1b[1m\x1b[36m======================================================================\x1b[0m');
     lines.push('');
-    lines.push(`\x1b[1m  Overall Score: ${formatScore(report.overallScore)} / 100\x1b[0m`);
+    lines.push(`\x1b[1m  Overall AEO & SEO Score: ${formatScore(report.overallScore)} / 100\x1b[0m`);
     lines.push('');
 
     for (const cat of Object.values(report.categories)) {

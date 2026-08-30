@@ -71,7 +71,7 @@ export class Aggregator {
     return {
       url,
       fetchTime: new Date().toISOString(),
-      aeoVersion: '0.1.2',
+      aeoVersion: '0.3.0',
       userAgent,
       overallScore,
       categories,

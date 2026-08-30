@@ -1138,7 +1138,7 @@ export class BrowserAeoEngine {
     return {
       url,
       fetchTime: new Date().toISOString(),
-      aeoVersion: '0.2.0',
+      aeoVersion: '0.3.0',
       userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Chrome Extension',
       overallScore,
       categories,

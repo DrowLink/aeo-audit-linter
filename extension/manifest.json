@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AEO & SEO Linter - Full SEO, GEO & AEO Audit",
-  "version": "0.2.0",
-  "description": "Lighthouse-style automated audit suite for Technical SEO, Generative Engine Optimization (GEO), and Answer Engine Optimization (AEO).",
+  "version": "0.3.0",
+  "description": "Lighthouse-style audit suite for Technical SEO, Generative Engine Optimization (GEO), and Answer Engine Optimization (AEO).",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

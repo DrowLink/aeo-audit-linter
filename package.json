@@ -14,6 +14,7 @@
     "typecheck": "tsc --build --verbose",
     "publish:core": "npm publish ./core --access public",
     "publish:cli": "npm publish ./cli --access public",
+    "zip:extension": "powershell -Command \"Compress-Archive -Path extension/* -DestinationPath aeo-linter-extension.zip -Force\"",
     "clean": "npm run clean --workspaces --if-present"
   },
   "devDependencies": {

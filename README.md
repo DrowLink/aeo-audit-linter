@@ -325,7 +325,7 @@ npm test
 
 Please review [CONTRIBUTING.md](CONTRIBUTING.md) before submitting Pull Requests.
 
-2026 ~ Copyrgiht
+2026 ~ Copyright
 
 
 ---

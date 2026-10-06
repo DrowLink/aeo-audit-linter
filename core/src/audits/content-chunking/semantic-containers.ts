@@ -20,12 +20,13 @@ export class SemanticContainersAudit extends Audit {
 
     const hasMain = chunks.hasSemanticMain;
     const hasArticleOrSection = chunks.hasSemanticArticle || chunks.hasSemanticSections;
+    const tagsCount = chunks.semanticTagsUsed.length;
 
-    let score = 0.3;
-    if (hasMain && hasArticleOrSection) {
-      score = 1;
-    } else if (hasMain || hasArticleOrSection) {
-      score = 0.7;
+    let score = 0.4;
+    if (hasMain && (hasArticleOrSection || tagsCount >= 2)) {
+      score = 1.0;
+    } else if (hasMain || hasArticleOrSection || tagsCount >= 1) {
+      score = 0.85;
     }
 
     const tags = chunks.semanticTagsUsed.length > 0 ? chunks.semanticTagsUsed.join(', ') : 'None (<div/body>)';

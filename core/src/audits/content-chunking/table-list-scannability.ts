@@ -42,12 +42,12 @@ export class TableListScannabilityAudit extends Audit {
     if (totalTablesCount > 0 && totalListsCount > 0) {
       score = 1.0;
       statusText = 'Excellent (Tables & Lists present)';
-    } else if (totalTablesCount > 0 || totalListsCount >= 2) {
-      score = 0.9;
+    } else if (totalTablesCount > 0 || totalListsCount >= 2 || totalListItemsCount >= 5) {
+      score = 0.95;
       statusText = 'Good (Structured elements detected)';
-    } else if (totalListsCount === 1 && totalListItemsCount >= 3) {
-      score = 0.8;
-      statusText = 'Acceptable (Single list detected)';
+    } else if (totalListsCount >= 1 && totalListItemsCount >= 3) {
+      score = 0.85;
+      statusText = 'Acceptable (List detected)';
     } else if (totalTablesCount === 0 && totalListsCount === 0) {
       if (totalWordCount > 500) {
         score = 0.3;

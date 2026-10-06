@@ -50,16 +50,16 @@ export class AuthorEeatPresenceAudit extends Audit {
       score = 1.0;
       statusSummary = `Author verified: ${authorName || 'Expert'} with sameAs profile links`;
     } else if (hasAuthorSchema && (hasPublisherSchema || hasDomAuthorByline)) {
-      score = 0.85;
+      score = 0.9;
       statusSummary = `Author schema detected: ${authorName || 'Identified'}`;
     } else if (hasAuthorSchema || hasDomAuthorByline) {
-      score = 0.65;
+      score = 0.75;
       statusSummary = authorName || domAuthorText ? `Author byline found: ${authorName || domAuthorText}` : 'Basic author signal found';
     } else if (hasPublisherSchema || artifacts.JSONLD.hasOrganization) {
-      score = 0.5;
-      statusSummary = 'Publisher/Organization identified (no specific author)';
+      score = 0.8;
+      statusSummary = 'Publisher/Organization identified (corporate entity authority)';
     } else {
-      score = totalWordCount > 400 ? 0.2 : 0.4;
+      score = totalWordCount > 400 ? 0.2 : 0.5;
       statusSummary = 'No author or publisher credentials detected';
     }
 

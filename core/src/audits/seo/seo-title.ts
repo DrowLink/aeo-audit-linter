@@ -28,7 +28,7 @@ export class SeoTitleAudit extends Audit {
 
     const length = title.trim().length;
 
-    if (length >= 30 && length <= 60) {
+    if (length >= 20 && length <= 70) {
       return this.generateAuditResult({
         score: 1,
         displayValue: `Optimal title length (${length} characters)`,
@@ -38,15 +38,15 @@ export class SeoTitleAudit extends Audit {
             { key: 'length', label: 'Character Count', valueType: 'numeric' },
             { key: 'status', label: 'Status', valueType: 'text' },
           ],
-          [{ title, length, status: 'Optimal (30-60 chars)' }]
+          [{ title, length, status: 'Optimal (20-70 chars)' }]
         ),
       });
     }
 
-    if (length < 30) {
+    if (length < 20) {
       return this.generateAuditResult({
-        score: 0.7,
-        displayValue: `Title too short (${length} chars, recommended 30-60)`,
+        score: length >= 15 ? 0.85 : 0.6,
+        displayValue: `Title too short (${length} chars, recommended 20-70)`,
         explanation: 'A short title may fail to provide enough topical context for search engines and LLMs.',
         details: this.makeTableDetails(
           [
@@ -54,23 +54,23 @@ export class SeoTitleAudit extends Audit {
             { key: 'length', label: 'Character Count', valueType: 'numeric' },
             { key: 'status', label: 'Status', valueType: 'text' },
           ],
-          [{ title, length, status: 'Too short (< 30 chars)' }]
+          [{ title, length, status: 'Too short (< 20 chars)' }]
         ),
       });
     }
 
-    // length > 60
+    // length > 70
     return this.generateAuditResult({
-      score: 0.8,
-      displayValue: `Title longer than recommended (${length} chars, recommended 30-60)`,
-      explanation: 'Titles longer than 60 characters risk getting truncated in Google SERP snippets.',
+      score: length <= 85 ? 0.85 : 0.7,
+      displayValue: `Title longer than recommended (${length} chars, recommended 20-70)`,
+      explanation: 'Titles longer than 70 characters risk getting truncated in search engine snippets.',
       details: this.makeTableDetails(
         [
           { key: 'title', label: 'Title Text', valueType: 'text' },
           { key: 'length', label: 'Character Count', valueType: 'numeric' },
           { key: 'status', label: 'Status', valueType: 'text' },
         ],
-        [{ title, length, status: 'Too long (> 60 chars)' }]
+        [{ title, length, status: 'Too long (> 70 chars)' }]
       ),
     });
   }

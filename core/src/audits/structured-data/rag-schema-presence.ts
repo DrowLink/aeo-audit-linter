@@ -26,13 +26,16 @@ export class RagSchemaPresenceAudit extends Audit {
     ];
 
     const presentCount = ragSchemas.filter((s) => s.present).length;
-    let score = 0;
+    const allSchemaTypes = Object.keys(jsonld.schemasCountByType || {});
+    let score = 0.4;
     if (presentCount >= 2) {
-      score = 1;
+      score = 1.0;
     } else if (presentCount === 1) {
-      score = 0.7;
+      score = 0.85;
+    } else if (allSchemaTypes.length > 0) {
+      score = 0.75;
     } else {
-      score = 0.2;
+      score = 0.4;
     }
 
     const tableItems = ragSchemas.map((s) => ({

@@ -21,9 +21,9 @@ export class DirectDefinitionAnsweringAudit extends Audit {
 
     if (pairs.length === 0) {
       return this.generateAuditResult({
-        score: 0.5,
-        displayValue: 'No questions detected in headings to evaluate direct answers',
-        explanation: 'Structuring headings as questions (e.g. "What is X?") improves snippet extraction in Answer Engines.',
+        score: 0.75,
+        displayValue: 'Declarative headings present (direct questions optional)',
+        explanation: 'Structuring key subheadings as questions (e.g. "What is X?") can further improve snippet extraction in Answer Engines.',
       });
     }
 

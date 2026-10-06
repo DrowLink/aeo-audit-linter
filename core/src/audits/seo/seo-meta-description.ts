@@ -28,7 +28,7 @@ export class SeoMetaDescriptionAudit extends Audit {
 
     const length = description.trim().length;
 
-    if (length >= 70 && length <= 155) {
+    if (length >= 50 && length <= 165) {
       return this.generateAuditResult({
         score: 1,
         displayValue: `Optimal description length (${length} characters)`,
@@ -38,15 +38,15 @@ export class SeoMetaDescriptionAudit extends Audit {
             { key: 'length', label: 'Character Count', valueType: 'numeric' },
             { key: 'status', label: 'Status', valueType: 'text' },
           ],
-          [{ description, length, status: 'Optimal (70-155 chars)' }]
+          [{ description, length, status: 'Optimal (50-165 chars)' }]
         ),
       });
     }
 
-    if (length < 70) {
+    if (length < 50) {
       return this.generateAuditResult({
-        score: 0.6,
-        displayValue: `Description too short (${length} chars, recommended 70-155)`,
+        score: length >= 35 ? 0.85 : 0.6,
+        displayValue: `Description too short (${length} chars, recommended 50-165)`,
         explanation: 'A short description may not provide enough context for search engines to generate a compelling snippet.',
         details: this.makeTableDetails(
           [
@@ -54,23 +54,23 @@ export class SeoMetaDescriptionAudit extends Audit {
             { key: 'length', label: 'Character Count', valueType: 'numeric' },
             { key: 'status', label: 'Status', valueType: 'text' },
           ],
-          [{ description, length, status: 'Too short (< 70 chars)' }]
+          [{ description, length, status: 'Too short (< 50 chars)' }]
         ),
       });
     }
 
-    // length > 155
+    // length > 165
     return this.generateAuditResult({
-      score: 0.75,
-      displayValue: `Description longer than recommended (${length} chars, recommended 70-155)`,
-      explanation: 'Descriptions over 155 characters may be truncated in search snippets on desktop and mobile.',
+      score: length <= 190 ? 0.85 : 0.75,
+      displayValue: `Description longer than recommended (${length} chars, recommended 50-165)`,
+      explanation: 'Descriptions over 165 characters may be truncated in search snippets on desktop and mobile.',
       details: this.makeTableDetails(
         [
           { key: 'description', label: 'Meta Description', valueType: 'text' },
           { key: 'length', label: 'Character Count', valueType: 'numeric' },
           { key: 'status', label: 'Status', valueType: 'text' },
         ],
-        [{ description, length, status: 'Too long (> 155 chars)' }]
+        [{ description, length, status: 'Too long (> 165 chars)' }]
       ),
     });
   }

@@ -30,7 +30,7 @@ export class QuestionHeadingAlignmentAudit extends Audit {
     }
 
     const ratio = questionHeadings / Math.max(1, totalSubheadings);
-    const score = questionHeadings >= 1 ? (ratio >= 0.25 ? 1 : 0.8) : 0.4;
+    const score = questionHeadings >= 1 ? (ratio >= 0.25 ? 1 : 0.85) : (totalSubheadings >= 2 ? 0.7 : 0.5);
 
     return this.generateAuditResult({
       score,

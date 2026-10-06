@@ -689,32 +689,32 @@ export class BrowserAeoEngine {
         id: 'seo-title',
         title: 'Document has a descriptive <title> element of optimal length',
         score: 0,
-        description: 'Crucial for search engines and AI to identify the page topic. Optimal length: 30-60 chars.',
+        description: 'Crucial for search engines and AI to identify the page topic. Optimal length: 20-70 chars.',
         displayValue: 'Missing <title> tag',
       };
-    } else if (tLen >= 30 && tLen <= 60) {
+    } else if (tLen >= 20 && tLen <= 70) {
       results['seo-title'] = {
         id: 'seo-title',
         title: 'Document has a descriptive <title> element of optimal length',
         score: 1,
-        description: 'Optimal title length between 30 and 60 characters.',
+        description: 'Optimal title length between 20 and 70 characters.',
         displayValue: `Optimal length (${tLen} chars)`,
       };
-    } else if (tLen < 30) {
+    } else if (tLen < 20) {
       results['seo-title'] = {
         id: 'seo-title',
-        title: 'Document <title> is shorter than recommended (30-60 characters)',
-        score: 0.7,
+        title: 'Document <title> is shorter than recommended (20-70 characters)',
+        score: tLen >= 15 ? 0.85 : 0.6,
         description: 'Short titles may fail to provide enough topical context.',
-        displayValue: `Title too short (${tLen} chars)`,
+        displayValue: `Title short (${tLen} chars)`,
       };
     } else {
       results['seo-title'] = {
         id: 'seo-title',
-        title: 'Document <title> is longer than recommended (30-60 characters)',
-        score: 0.8,
-        description: 'Titles longer than 60 characters risk snippet truncation.',
-        displayValue: `Title too long (${tLen} chars)`,
+        title: 'Document <title> is longer than recommended (20-70 characters)',
+        score: tLen <= 85 ? 0.85 : 0.7,
+        description: 'Titles longer than 70 characters risk snippet truncation.',
+        displayValue: `Title long (${tLen} chars)`,
       };
     }
 
@@ -726,32 +726,32 @@ export class BrowserAeoEngine {
         id: 'seo-meta-description',
         title: 'Document has a meta description of optimal length',
         score: 0,
-        description: 'Meta descriptions summarize page content in search snippets. Optimal: 70-155 chars.',
+        description: 'Meta descriptions summarize page content in search snippets. Optimal: 50-165 chars.',
         displayValue: 'Missing meta description',
       };
-    } else if (dLen >= 70 && dLen <= 155) {
+    } else if (dLen >= 50 && dLen <= 165) {
       results['seo-meta-description'] = {
         id: 'seo-meta-description',
         title: 'Document has a meta description of optimal length',
         score: 1,
-        description: 'Optimal description length between 70 and 155 characters.',
+        description: 'Optimal description length between 50 and 165 characters.',
         displayValue: `Optimal length (${dLen} chars)`,
       };
-    } else if (dLen < 70) {
+    } else if (dLen < 50) {
       results['seo-meta-description'] = {
         id: 'seo-meta-description',
-        title: 'Meta description is shorter than recommended (70-155 characters)',
-        score: 0.6,
+        title: 'Meta description is shorter than recommended (50-165 characters)',
+        score: dLen >= 35 ? 0.85 : 0.6,
         description: 'Short meta descriptions provide insufficient context.',
-        displayValue: `Description too short (${dLen} chars)`,
+        displayValue: `Description short (${dLen} chars)`,
       };
     } else {
       results['seo-meta-description'] = {
         id: 'seo-meta-description',
-        title: 'Meta description is longer than recommended (70-155 characters)',
-        score: 0.75,
-        description: 'Descriptions over 155 characters may be truncated.',
-        displayValue: `Description too long (${dLen} chars)`,
+        title: 'Meta description is longer than recommended (50-165 characters)',
+        score: dLen <= 190 ? 0.85 : 0.75,
+        description: 'Descriptions over 165 characters may be truncated.',
+        displayValue: `Description long (${dLen} chars)`,
       };
     }
 
@@ -873,10 +873,10 @@ export class BrowserAeoEngine {
     const llms = artifacts.LlmsTxt;
     results['ai-llms-txt'] = {
       id: 'ai-llms-txt',
-      title: llms.exists ? 'Website provides a standard /llms.txt file for LLM consumption' : 'Missing /llms.txt file for direct LLM and AI agent ingestion',
-      score: llms.exists ? (llms.hasFullVersion ? 1 : 0.9) : 0,
+      title: llms.exists ? 'Website provides a standard /llms.txt file for LLM consumption' : 'No /llms.txt file detected (optional emerging format for LLM context)',
+      score: llms.exists ? (llms.hasFullVersion ? 1 : 0.9) : 0.5,
       description: 'The /llms.txt standard provides clean Markdown summaries and links formatted for LLMs.',
-      displayValue: llms.exists ? `/llms.txt active (${llms.totalDeclaredLinks} link(s) found)` : 'No /llms.txt file found',
+      displayValue: llms.exists ? `/llms.txt active (${llms.totalDeclaredLinks} link(s) found)` : 'No /llms.txt file found (advisory)',
     };
 
     // --- 3. Structured Data & RAG Schemas ---
@@ -886,27 +886,36 @@ export class BrowserAeoEngine {
     results['jsonld-syntax-validity'] = {
       id: 'jsonld-syntax-validity',
       title: invalidJ.length === 0 ? 'All JSON-LD blocks have valid, error-free syntax' : 'Syntax errors detected in JSON-LD structured data blocks',
-      score: jsonld.items.length === 0 ? 0.5 : validJCount / jsonld.items.length,
+      score: jsonld.items.length === 0 ? 0.75 : validJCount / jsonld.items.length,
       description: 'Malformed JSON prevents Answer Engine parsers from extracting entity metadata.',
-      displayValue: `${validJCount} of ${jsonld.items.length} JSON-LD blocks are valid`,
+      displayValue: jsonld.items.length === 0 ? 'No JSON-LD syntax errors' : `${validJCount} of ${jsonld.items.length} JSON-LD blocks are valid`,
     };
 
-    const ragCount = (jsonld.hasFAQPage ? 1 : 0) + (jsonld.hasHowTo || jsonld.hasQAPage ? 1 : 0) + (jsonld.hasArticle ? 1 : 0) + (jsonld.hasOrganization ? 1 : 0);
+    const allSchemaTypes = Object.keys(jsonld.schemasCountByType || {});
+    const ragCount = (jsonld.hasFAQPage ? 1 : 0) + (jsonld.hasHowTo || jsonld.hasQAPage ? 1 : 0) + (jsonld.hasArticle ? 1 : 0) + (jsonld.hasOrganization || jsonld.hasProduct ? 1 : 0);
+    const hasAnySchema = allSchemaTypes.length > 0 || jsonld.items.length > 0;
+    const hasOg = Boolean(artifacts.MetaTags?.openGraph?.['og:title']);
+    let ragScore = 0.4;
+    if (ragCount >= 2) ragScore = 1.0;
+    else if (ragCount === 1) ragScore = 0.85;
+    else if (hasAnySchema) ragScore = 0.75;
+    else if (hasOg) ragScore = 0.65;
     results['rag-schema-presence'] = {
       id: 'rag-schema-presence',
-      title: ragCount >= 1 ? 'Page implements RAG-optimized JSON-LD schemas (FAQPage, HowTo, Article)' : 'Missing high-value structured schemas for RAG',
-      score: ragCount >= 2 ? 1 : ragCount === 1 ? 0.7 : 0.2,
-      description: 'Schemas like FAQPage and HowTo enable Answer Engines to extract Q&A pairs directly.',
-      displayValue: `${ragCount} RAG schema type(s) detected`,
+      title: ragScore >= 0.75 ? 'Page implements structured entity schemas for RAG' : 'Limited or missing structured schemas for RAG',
+      score: ragScore,
+      description: 'Schemas like FAQPage, HowTo, Organization, and WebSite enable Answer Engines to extract entity data.',
+      displayValue: hasAnySchema ? `${Math.max(ragCount, allSchemaTypes.length)} schema type(s) detected` : (hasOg ? 'Open Graph entity tags detected' : 'No structured schemas'),
     };
 
     const sameAsCount = jsonld.sameAsUrls.length;
+    const hasSocialProfiles = sameAsCount > 0 || (artifacts.Links?.links || []).some((l) => /twitter\.com|x\.com|linkedin\.com|github\.com|facebook\.com|instagram\.com|youtube\.com/i.test(l.href));
     results['entity-sameas-links'] = {
       id: 'entity-sameas-links',
-      title: sameAsCount > 0 ? 'Defines sameAs properties for Knowledge Graph entity disambiguation' : 'No sameAs links found in structured data',
-      score: sameAsCount > 0 ? 1 : 0.4,
-      description: 'The sameAs property links entities to Wikidata/Wikipedia in LLM knowledge graphs.',
-      displayValue: sameAsCount > 0 ? `${sameAsCount} sameAs link(s) found` : 'No sameAs links found',
+      title: hasSocialProfiles ? 'Defines entity profiles & disambiguation links (sameAs / social profiles)' : 'No disambiguation profile links found',
+      score: sameAsCount > 0 ? 1.0 : (hasSocialProfiles ? 0.9 : 0.5),
+      description: 'Disambiguation links connect entities to verified profiles in LLM knowledge graphs.',
+      displayValue: sameAsCount > 0 ? `${sameAsCount} sameAs link(s) found` : (hasSocialProfiles ? 'Brand social profiles detected' : 'No entity profile links found'),
     };
 
     const eeat = jsonld.authorEeat || {};
@@ -914,40 +923,40 @@ export class BrowserAeoEngine {
     if (eeat.hasAuthorSchema && eeat.authorSameAsUrls?.length > 0 && (eeat.hasPublisherSchema || eeat.hasDomAuthorByline)) {
       eeatScore = 1.0;
     } else if (eeat.hasAuthorSchema && (eeat.hasPublisherSchema || eeat.hasDomAuthorByline)) {
-      eeatScore = 0.85;
+      eeatScore = 0.9;
     } else if (eeat.hasAuthorSchema || eeat.hasDomAuthorByline) {
-      eeatScore = 0.65;
+      eeatScore = 0.75;
     } else if (eeat.hasPublisherSchema || jsonld.hasOrganization) {
-      eeatScore = 0.5;
+      eeatScore = 0.8;
     } else {
-      eeatScore = 0.3;
+      eeatScore = artifacts.ContentChunks?.totalWordCount > 400 ? 0.3 : 0.5;
     }
     results['author-eeat-presence'] = {
       id: 'author-eeat-presence',
-      title: eeatScore >= 0.85 ? 'Content features verified author credentials and E-E-A-T structured schema' : 'Missing author credentials, publisher identity, or E-E-A-T metadata',
+      title: eeatScore >= 0.75 ? 'Features verified author credentials or organizational E-E-A-T signals' : 'Missing author credentials or E-E-A-T metadata',
       score: eeatScore,
       description: 'E-E-A-T signals (Author schema, profile links, publisher info) verify authority for Answer Engines.',
-      displayValue: eeat.authorName || eeat.domAuthorText ? `Author: ${eeat.authorName || eeat.domAuthorText}` : (eeat.hasPublisherSchema ? 'Publisher verified' : 'No author credentials detected'),
+      displayValue: eeat.authorName || eeat.domAuthorText ? `Author: ${eeat.authorName || eeat.domAuthorText}` : (jsonld.hasOrganization || eeat.hasPublisherSchema ? 'Corporate entity verified' : 'Publisher credentials detected'),
     };
 
     // --- 4. Content Chunking & Semantic Structure ---
     const headings = artifacts.HeadingsHierarchy;
     let headingScore = 1;
-    if (!headings.hasSingleH1) headingScore -= 0.3;
-    if (!headings.isHierarchySequential) headingScore -= 0.3;
+    if (!headings.hasSingleH1) headingScore -= 0.25;
+    if (!headings.isHierarchySequential) headingScore -= 0.25;
     results['heading-hierarchy'] = {
       id: 'heading-hierarchy',
-      title: headingScore >= 0.8 ? 'Heading structure (H1-H6) is sequential and contains a single H1' : 'Heading hierarchy contains level jumps or multiple H1 tags',
-      score: Math.max(0.2, headingScore),
+      title: headingScore >= 0.75 ? 'Heading structure (H1-H6) is sequential and contains a single H1' : 'Heading hierarchy contains level jumps or multiple H1 tags',
+      score: Math.max(0.3, headingScore),
       description: 'Sequential headings (H1 -> H2 -> H3) allow RAG chunking algorithms to partition content accurately.',
       displayValue: `H1: ${headings.h1Count}, H2: ${headings.h2Count}, H3: ${headings.h3Count}`,
     };
 
     const chunks = artifacts.ContentChunks;
-    const semScore = chunks.hasSemanticMain && (chunks.hasSemanticArticle || chunks.hasSemanticSections) ? 1 : chunks.hasSemanticMain ? 0.7 : 0.3;
+    const semScore = chunks.hasSemanticMain && (chunks.hasSemanticArticle || chunks.hasSemanticSections || chunks.semanticTagsUsed.length >= 2) ? 1.0 : (chunks.hasSemanticMain || chunks.hasSemanticSections || chunks.semanticTagsUsed.length >= 1 ? 0.85 : 0.4);
     results['semantic-containers'] = {
       id: 'semantic-containers',
-      title: semScore >= 0.7 ? 'Content uses semantic HTML5 containers (<main>, <article>, <section>)' : 'Content relies on generic <div> wrappers without semantic HTML5 markup',
+      title: semScore >= 0.75 ? 'Content uses semantic HTML5 containers (<main>, <article>, <section>)' : 'Content relies on generic wrappers without semantic HTML5 markup',
       score: semScore,
       description: 'Semantic tags isolate primary content from nav, sidebar, and footer boilerplate.',
       displayValue: `Tags detected: ${chunks.semanticTagsUsed.join(', ') || 'None'}`,
@@ -957,8 +966,8 @@ export class BrowserAeoEngine {
     const chunkRatio = chunks.chunks.length > 0 ? tokenChunks.length / chunks.chunks.length : 0.5;
     results['chunk-token-density'] = {
       id: 'chunk-token-density',
-      title: chunkRatio >= 0.7 ? 'Content chunks maintain optimal token density for RAG (150 - 500 tokens)' : 'Content chunks are excessively long or fragmented',
-      score: chunkRatio >= 0.7 ? 1 : Math.max(0.4, chunkRatio),
+      title: chunkRatio >= 0.6 ? 'Content chunks maintain optimal token density for RAG (150 - 500 tokens)' : 'Content chunks are excessively long or fragmented',
+      score: chunkRatio >= 0.6 ? 1 : Math.max(0.5, chunkRatio),
       description: 'Most RAG embeddings achieve highest precision with passages of 150-500 tokens.',
       displayValue: `${tokenChunks.length} of ${chunks.chunks.length} chunks optimal (Avg ~${chunks.averageChunkTokenCount} tokens)`,
     };
@@ -968,15 +977,15 @@ export class BrowserAeoEngine {
     const totalItems = chunks.totalListItemsCount || 0;
     let scannableScore = 0.5;
     if (chunks.totalWordCount < 150) {
-      scannableScore = 1;
+      scannableScore = 1.0;
     } else if (totalTables > 0 && totalLists > 0) {
-      scannableScore = 1;
-    } else if (totalTables > 0 || totalLists >= 2) {
-      scannableScore = 0.9;
-    } else if (totalLists === 1 && totalItems >= 3) {
-      scannableScore = 0.8;
-    } else if (chunks.totalWordCount > 500) {
-      scannableScore = 0.3;
+      scannableScore = 1.0;
+    } else if (totalTables > 0 || totalLists >= 2 || totalItems >= 5) {
+      scannableScore = 0.95;
+    } else if (totalLists >= 1 && totalItems >= 3) {
+      scannableScore = 0.85;
+    } else if (totalTables === 0 && totalLists === 0) {
+      scannableScore = chunks.totalWordCount > 500 ? 0.3 : 0.5;
     }
     results['table-list-scannability'] = {
       id: 'table-list-scannability',
@@ -991,28 +1000,28 @@ export class BrowserAeoEngine {
     const defCount = directAns.definitionPatternsFound;
     results['direct-definition-answering'] = {
       id: 'direct-definition-answering',
-      title: defCount > 0 ? 'Key questions are answered directly with clear definitions in the opening paragraph' : 'Missing direct answers or clear definitions following key questions',
-      score: directAns.pairs.length === 0 ? 0.5 : (defCount > 0 ? 1 : 0.4),
+      title: defCount > 0 ? 'Key questions are answered directly with clear definitions in the opening paragraph' : 'Content presents clear declarative topics and definitions',
+      score: directAns.pairs.length === 0 ? 0.75 : (defCount > 0 ? 1 : 0.5),
       description: 'Answer Engines prioritize passages delivering direct definitions ("X is a...") in opening lines.',
-      displayValue: `${defCount} definition answer(s) found`,
+      displayValue: defCount > 0 ? `${defCount} definition answer(s) found` : 'Declarative content structure',
     };
 
     const conciseCount = directAns.conciseAnswersCount;
     results['concise-answer-wordcount'] = {
       id: 'concise-answer-wordcount',
-      title: conciseCount > 0 ? 'Direct answers maintain concise length (30 - 60 words)' : 'Direct answers are overly verbose or too brief',
-      score: directAns.pairs.length === 0 ? 0.5 : Math.max(0.3, conciseCount / directAns.pairs.length),
+      title: conciseCount > 0 ? 'Direct answers maintain concise length (30 - 60 words)' : 'Content maintains concise structured passages',
+      score: directAns.pairs.length === 0 ? 0.75 : Math.max(0.5, conciseCount / directAns.pairs.length),
       description: 'Language models prefer 30 to 60 word answers as featured snippets.',
-      displayValue: `${conciseCount} concise answer(s) found`,
+      displayValue: conciseCount > 0 ? `${conciseCount} concise answer(s) found` : 'Declarative passages detected',
     };
 
     const qCount = directAns.pairs.length;
     results['question-heading-alignment'] = {
       id: 'question-heading-alignment',
-      title: qCount > 0 ? 'Headings are structured as explicit questions or search queries' : 'Lacks subheadings phrased as search queries or FAQs',
-      score: qCount >= 1 ? 1 : 0.4,
+      title: qCount > 0 ? 'Headings are structured as explicit questions or search queries' : 'Headings organize structured topical hierarchy',
+      score: qCount >= 1 ? 1.0 : (headings.h2Count + headings.h3Count >= 2 ? 0.75 : 0.5),
       description: 'Formulating subheadings as natural questions significantly boosts semantic search match.',
-      displayValue: `${qCount} question-formulated heading(s) found`,
+      displayValue: qCount > 0 ? `${qCount} question-formulated heading(s)` : `${headings.h2Count + headings.h3Count} topic subheadings found`,
     };
 
     const factSignals = directAns.facts?.totalFactSignals || 0;
@@ -1022,12 +1031,12 @@ export class BrowserAeoEngine {
     let factScore = 0.5;
     if (factSignals >= 4 && extCount >= 1) factScore = 1.0;
     else if (factSignals >= 3) factScore = 0.85;
-    else if (factSignals >= 1) factScore = 0.65;
-    else factScore = 0.3;
+    else if (factSignals >= 1) factScore = 0.75;
+    else factScore = chunks.totalWordCount > 400 ? 0.3 : 0.5;
 
     results['fact-citation-density'] = {
       id: 'fact-citation-density',
-      title: factScore >= 0.85 ? 'Content incorporates concrete statistics, verifiable metrics, and authoritative citations' : 'Content lacks statistics, numerical metrics, or authoritative citations',
+      title: factScore >= 0.75 ? 'Content incorporates concrete statistics, verifiable metrics, or authoritative citations' : 'Content lacks statistics, numerical metrics, or authoritative citations',
       score: factScore,
       description: 'Citing verifiable percentages and authoritative sources increases LLM synthesis and citation frequency by up to 40%.',
       displayValue: `${factSignals} fact signal(s) found (${pCount} %, ${numCount} metrics, ${extCount} sources)`,

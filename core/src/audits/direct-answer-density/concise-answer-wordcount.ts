@@ -21,8 +21,8 @@ export class ConciseAnswerWordCountAudit extends Audit {
 
     if (pairs.length === 0) {
       return this.generateAuditResult({
-        score: 0.5,
-        displayValue: 'No questions detected',
+        score: 0.75,
+        displayValue: 'Declarative content structure (Q&A optional)',
       });
     }
 

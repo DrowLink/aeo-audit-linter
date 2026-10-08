@@ -1,0 +1,53 @@
+<svg width="512" height="512" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#151824" />
+      <stop offset="100%" stop-color="#08090e" />
+    </radialGradient>
+    <linearGradient id="goldBeam" x1="15" y1="15" x2="85" y2="85" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFDF2" />
+      <stop offset="30%" stop-color="#F5DF9E" />
+      <stop offset="65%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#8C6B1C" />
+    </linearGradient>
+    <linearGradient id="emeraldScan" x1="25" y1="55" x2="75" y2="55" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#34D399" />
+      <stop offset="50%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <radialGradient id="ambientGold" cx="50" cy="50" r="45" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E2C275" stop-opacity="0.09" />
+      <stop offset="100%" stop-color="#E2C275" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background squircle -->
+  <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#bgGrad)" stroke="#E2C275" stroke-opacity="0.28" stroke-width="0.8"/>
+
+  <!-- Ambient inner glow -->
+  <circle cx="50" cy="50" r="44" fill="url(#ambientGold)" />
+
+  <!-- Reticle rings -->
+  <circle cx="50" cy="50" r="42" stroke="rgba(226, 194, 117, 0.18)" stroke-width="1.4" />
+  <circle cx="50" cy="50" r="33" stroke="rgba(255, 255, 255, 0.05)" stroke-width="1" stroke-dasharray="2.5 4" />
+  
+  <!-- Precision cardinal ticks -->
+  <line x1="50" y1="9" x2="50" y2="15" stroke="#E2C275" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+  <line x1="91" y1="50" x2="85" y2="50" stroke="#E2C275" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+  <line x1="50" y1="91" x2="50" y2="85" stroke="#E2C275" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+  <line x1="9" y1="50" x2="15" y2="50" stroke="#E2C275" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+
+  <!-- The Architectural 'A' Chevron Legs -->
+  <path d="M 23 75 L 47 21 C 48.5 17.5 51.5 17.5 53 21 L 77 75" 
+        stroke="url(#goldBeam)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Apex Facet Highlight -->
+  <path d="M 44 28 L 50 19 L 56 28" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.55" />
+
+  <!-- Emerald Verification Linter Beam -->
+  <path d="M 30 55 L 70 55" stroke="url(#emeraldScan)" stroke-width="6.8" stroke-linecap="round" />
+
+  <!-- Central Precision Diagnostic Aperture -->
+  <circle cx="50" cy="55" r="5.6" fill="#08090E" stroke="#FFFDF2" stroke-width="2.4" />
+  <circle cx="50" cy="55" r="2.5" fill="#34D399" />
+</svg>

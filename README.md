@@ -13,7 +13,7 @@
 
 **The complete, open-source audit suite for Technical SEO, Generative Engine Optimization (GEO), and Answer Engine Optimization (AEO).**
 
-[Packages & Installation](#-packages--installation) • [CLI Usage](#-cli-usage) • [HTML Reports](#-visual-html-report--serp-preview) • [CI/CD Workflow](#-cicd-github-actions-integration) • [Chrome DevTools](#-chrome-devtools-extension) • [Audits Catalog](#-audits-catalog-25-audits-across-5-categories) • [Contributing](./COLLABORATING.md)
+[Packages & Installation](#-packages--installation) • [CLI Usage](#-cli-usage) • [HTML Reports](#-visual-html-report--serp-preview) • [CI/CD Workflow](#-cicd-github-actions-integration) • [Chrome DevTools](#-chrome-devtools-extension) • [Audits Catalog](#-audits-catalog-25-audits-across-5-categories) • [System Specs](./docs/specs/README.md) • [Contributing](./COLLABORATING.md)
 
 </div>
 

@@ -39,26 +39,36 @@ This document provides a technical walkthrough of how `aeo-linter` is architecte
   │                    2. AUDIT PHASE                       │
   │                                                         │
   │  Pure deterministic functions consuming `Artifacts`:    │
+  │  [Core SEO & Indexability] (20 pts)                     │
+  │    ├── seo-title (w: 8) ────────▶ AuditResult           │
+  │    ├── seo-meta-description (7) ▶ AuditResult           │
+  │    ├── seo-canonical (w: 6) ────▶ AuditResult           │
+  │    ├── seo-indexability (w: 8) ─▶ AuditResult           │
+  │    ├── seo-image-alt (w: 5) ────▶ AuditResult           │
+  │    ├── seo-crawlable-links (5) ─▶ AuditResult           │
+  │    ├── seo-open-graph (w: 4) ───▶ AuditResult           │
+  │    ├── seo-viewport-mobile (4) ─▶ AuditResult           │
+  │    └── seo-https (w: 5) ────────▶ AuditResult           │
   │                                                         │
-  │  [AI Accessibility & Crawling] (25 pts)                 │
+  │  [AI Accessibility & Crawling] (20 pts)                 │
   │    ├── ai-robots-txt (w: 9) ────▶ AuditResult           │
   │    ├── ai-x-robots-tag (w: 7) ──▶ AuditResult           │
   │    ├── ai-llms-txt (w: 6) ──────▶ AuditResult           │
   │    └── ai-bot-sitemap (w: 3) ───▶ AuditResult           │
   │                                                         │
-  │  [Structured Data & RAG Schemas] (25 pts)               │
+  │  [Structured Data & RAG Schemas] (20 pts)               │
   │    ├── rag-schema-presence (w: 8) ──▶ AuditResult       │
   │    ├── jsonld-syntax-validity (w: 7)▶ AuditResult       │
   │    ├── author-eeat-presence (w: 6) ─▶ AuditResult       │
   │    └── entity-sameas-links (w: 4) ──▶ AuditResult       │
   │                                                         │
-  │  [Content Chunking & Semantic Structure] (25 pts)       │
+  │  [Content Chunking & Semantic Structure] (20 pts)       │
   │    ├── heading-hierarchy (w: 7) ────▶ AuditResult       │
   │    ├── semantic-containers (w: 6) ──▶ AuditResult       │
   │    ├── chunk-token-density (w: 6) ──▶ AuditResult       │
   │    └── table-list-scannability (w: 6)▶ AuditResult      │
   │                                                         │
-  │  [Direct Answer Density & Fact Grounding] (25 pts)      │
+  │  [Direct Answer Density & Fact Grounding] (20 pts)      │
   │    ├── direct-definition-answering (w: 8)▶ AuditResult  │
   │    ├── concise-answer-wordcount (w: 6) ──▶ AuditResult  │
   │    ├── fact-citation-density (w: 6) ─────▶ AuditResult  │
@@ -83,3 +93,14 @@ Terminal Reporter        HTML Interactive         CI/CD Quality Gate
   (ANSI Colors)        Lighthouse Dashboard      `evaluateQualityGates`
                                                  (`--fail-under 80`)
 ```
+
+---
+
+## 📚 Complete System Specifications
+
+For exhaustive technical and algorithmic documentation, consult the [Specs Directory](./specs/README.md):
+- [01. Architecture & Pipeline Specification](./specs/01-architecture-pipeline.md)
+- [02. Audits Catalog & Scoring Heuristics](./specs/02-audits-catalog.md)
+- [03. Gatherers & Artifacts Specification](./specs/03-gatherers-spec.md)
+- [04. Interfaces (CLI & Chrome Extension)](./specs/04-interfaces-cli-extension.md)
+

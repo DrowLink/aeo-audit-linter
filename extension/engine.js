@@ -1028,18 +1028,21 @@ export class BrowserAeoEngine {
     const extCount = directAns.facts?.externalSourcesCount || 0;
     const pCount = directAns.facts?.percentagesCount || 0;
     const numCount = directAns.facts?.numericalMetricsCount || 0;
-    let factScore = 0.5;
-    if (factSignals >= 4 && extCount >= 1) factScore = 1.0;
-    else if (factSignals >= 3) factScore = 0.85;
-    else if (factSignals >= 1) factScore = 0.75;
-    else factScore = chunks.totalWordCount > 400 ? 0.3 : 0.5;
+    const isBriefPage = chunks.totalWordCount < 150;
+    let factScore = isBriefPage ? 1.0 : 0.5;
+    if (!isBriefPage && factSignals >= 4 && extCount >= 1) factScore = 1.0;
+    else if (!isBriefPage && factSignals >= 3) factScore = 0.85;
+    else if (!isBriefPage && factSignals >= 1) factScore = 0.75;
+    else if (!isBriefPage) factScore = chunks.totalWordCount > 400 ? 0.3 : 0.5;
 
     results['fact-citation-density'] = {
       id: 'fact-citation-density',
       title: factScore >= 0.75 ? 'Content incorporates concrete statistics, verifiable metrics, or authoritative citations' : 'Content lacks statistics, numerical metrics, or authoritative citations',
       score: factScore,
       description: 'Citing verifiable percentages and authoritative sources increases LLM synthesis and citation frequency by up to 40%.',
-      displayValue: `${factSignals} fact signal(s) found (${pCount} %, ${numCount} metrics, ${extCount} sources)`,
+      displayValue: isBriefPage
+        ? 'Brief page (statistical citations optional)'
+        : `${factSignals} fact signal(s) found (${pCount} %, ${numCount} metrics, ${extCount} sources)`,
     };
 
     return results;
